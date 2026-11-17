@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Help{% endblock %}
+{% block content %}
+<div class="stack" style="max-width:900px">
+  <header class="page-head">
+    <div>
+      <h1>Help centre</h1>
+      <p class="sub">How every screen works, and how to reach a person</p>
+    </div>
+  </header>
+
+  {% if notice %}<div class="panel-soft" style="color:var(--accent);font-size:13px;font-weight:600">{{ notice }}</div>{% endif %}
+
+  <div class="card card-body">
+    <h2 style="margin-bottom:10px">Do this first</h2>
+    <div class="help-starts">
+      <a class="help-start" href="/products">
+        <span>1</span>
+        <strong>Add a product</strong>
+        <em>Name it, then set cost price and selling price.</em>
+      </a>
+      <a class="help-start" href="/stock">
+        <span>2</span>
+        <strong>Receive stock</strong>
+        <em>Log what arrived and what you paid for it.</em>
+      </a>
+      <a class="help-start" href="/sales">
+        <span>3</span>
+        <strong>Record a sale</strong>
+        <em>Sell it, and profit updates on the dashboard.</em>
+      </a>
+    </div>
+    <div class="form-actions">
+      <form action="/help/tour" method="post">
+        <button class="btn btn-ghost btn-sm" type="submit">Walk me through the app again</button>
+      </form>
+      <span class="card-note">
+        {% if show_tour %}The walkthrough opens automatically on your dashboard.{% else %}A six-step tour of the dashboard, inventory, sales, stock and expenses.{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <div class="card card-body help-index">
+    <h2 style="margin-bottom:10px">What is in here</h2>
+    <ul>
+      <li><a href="#dashboard">The dashboard numbers</a></li>
+      <li><a href="#products">Products and inventory</a></li>
+      <li><a href="#stock">Receiving stock</a></li>
+      <li><a href="#sales">Recording a sale</a></li>
+      <li><a href="#expenses">Expenses</a></li>
+      <li><a href="#accounts">Accounts, roles and sign-ups</a></li>
+      <li><a href="#support">Contact support</a></li>
+    </ul>
+  </div>
+
+  <section class="card card-body" id="dashboard">
+    <h2>The dashboard numbers</h2>
+    <p>Four cards sit at the top, all about this month unless they say otherwise:</p>
+    <ul class="help-list">
+      <li><strong>Sales today</strong> — money taken today, with the number of transactions.</li>
+      <li><strong>Sales this month</strong> — everything sold since the first of the month.</li>
+      <li><strong>Gross profit (month)</strong> — sales minus the cost of the goods sold. The line under it shows that cost of goods (COGS).</li>
+      <li><strong>Net after expenses</strong> — gross profit minus the expenses you logged.</li>
+    </ul>
+    <p>
+      Below the cards you get the daily profit trend, your best sellers, recent sales and the
+      items that are running low. Tax is never counted as profit: it is collected, not earned.
+    </p>
+  </section>
+
+  <section class="card card-body" id="products">
+    <h2>Products and inventory</h2>
+    <p>
+      Inventory is the list of everything you sell. Each product carries a name, an optional SKU,
+      a category, a supplier, a cost price, a selling price and a reorder level.
+    </p>
+    <ul class="help-list">
+      <li><strong>Cost price</strong> is what the item costs you. It is the number that makes profit truthful, so keep it current.</li>
+      <li><strong>Selling price</strong> is what you charge. The product page shows the margin between the two.</li>
+      <li><strong>Reorder level</strong> is the point where the dashboard starts calling the item low on stock.</li>
+      <li><strong>Archive</strong> hides a product from the sale screen without deleting its history.</li>
+    </ul>
+  </section>
+
+  <section class="card card-body" id="stock">
+    <h2>Receiving stock</h2>
+    <p>
+      Every delivery goes under Stock: choose the product, the quantity that arrived and the unit
+      cost you paid. Stock on hand goes up immediately.
+    </p>
+    <p>
+      The latest purchase price becomes the product's cost price, so the profit reported on the
+      next sale uses the price you actually paid most recently. Change the cost price by hand on
+      the product if you ever need to.
+    </p>
+  </section>
+
+  <section class="card card-body" id="sales">
+    <h2>Recording a sale</h2>
+    <p>
+      Sales &rarr; New sale. Add one line per item with its quantity and unit price, then save.
+      A few things happen automatically:
+    </p>
+    <ul class="help-list">
+      <li>Stock on hand drops by the quantity sold.</li>
+      <li>The cost of goods is taken from each product's cost price, so gross profit is accurate.</li>
+      <li>A discount comes off the subtotal before tax. Tax, when it is switched on in Settings, is added on top of the discounted amount.</li>
+    </ul>
+    <p>
+      The sale list shows the total, the cost of goods and the profit per sale, so you can see
+      which transactions actually made money.
+    </p>
+  </section>
+
+  <section class="card card-body" id="expenses">
+    <h2>Expenses</h2>
+    <p>
+      Rent, transport, data, salaries, anything you spend to keep the shop running. Log the date,
+      what it was for and the amount. Expenses do not touch stock or sales: they come off gross
+      profit to give the net figure on the dashboard.
+    </p>
+  </section>
+
+  <section class="card card-body" id="accounts">
+    <h2>Accounts, roles and sign-ups</h2>
+    <ul class="help-list">
+      <li><strong>Administrator</strong> — everything a member can do, plus Settings (store name, currency, tax) and Admin (accounts, roles, sign-ups, store code).</li>
+      <li><strong>Member</strong> — records sales, takes in stock, manages products and logs expenses.</li>
+      <li><strong>Sign-ups</strong> — an administrator can allow or close new accounts, share the invite link, and create a new store code.</li>
+      <li><strong>Store code</strong> — optional at sign-up. Someone with the invite link gets it filled in for them.</li>
+      <li><strong>Everyone shares one set of books</strong>: all accounts see the same sales, stock and expenses.</li>
+    </ul>
+  </section>
+
+  <section class="card card-body" id="support">
+    <h2>Contact support</h2>
+    <p>Stuck, or something looks wrong? Reach the person who runs this app:</p>
+    <div class="help-contact">
+      <a class="help-contact-row" href="mailto:{{ support_email }}?subject=Retail%20BI%20help">
+        <span class="help-contact-label">Email</span>
+        <span class="help-contact-value">{{ support_email }}</span>
+      </a>
+      {% if support_phone %}
+        <a class="help-contact-row" href="tel:{{ support_phone|replace(' ', '') }}">
+          <span class="help-contact-label">Phone</span>
+          <span class="help-contact-value">{{ support_phone }}</span>
+        </a>
+      {% endif %}
+    </div>
+    <p class="card-note">
+      Include your account email and, if it helps, the page you were on when it happened.
+    </p>
+  </section>
+</div>
+{% endblock %}

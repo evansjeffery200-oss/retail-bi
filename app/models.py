@@ -18,6 +18,7 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255))
     full_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     role: Mapped[str] = mapped_column(String(16), default="member", server_default="member")
+    tour_done: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     @property
@@ -43,6 +44,8 @@ class Business(Base):
     tax_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     tax_rate: Mapped[float] = mapped_column(Float, default=0.0)
     signup_open: Mapped[bool] = mapped_column(Boolean, default=True)
+    support_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    support_phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
     signup_code: Mapped[str | None] = mapped_column(String(24), nullable=True)
 
 

@@ -102,6 +102,27 @@
     <div class="form-actions"><button class="btn btn-primary" type="submit">Save sign-up settings</button></div>
   </form>
 
+  <form class="card card-body" action="/admin/contact" method="post">
+    <h2 style="margin-bottom:6px">Support contact</h2>
+    <p class="card-note" style="margin-bottom:14px">
+      These details sit at the bottom of the help centre, so people know who to ask.
+      Leave the phone blank and only the email shows.
+    </p>
+    <div class="form-grid">
+      <div>
+        <label class="label" for="support_email">Support email</label>
+        <input class="field" id="support_email" name="support_email" type="email"
+               value="{{ business.support_email or '' }}" placeholder="you@example.com" />
+      </div>
+      <div>
+        <label class="label" for="support_phone">Support phone (optional)</label>
+        <input class="field" id="support_phone" name="support_phone"
+               value="{{ business.support_phone or '' }}" placeholder="+234 800 000 0000" />
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Save support contact</button></div>
+  </form>
+
   <form action="/admin/signups/regenerate" method="post">
     <button class="btn btn-ghost" type="submit">Create a new store code</button>
     <span class="card-note" style="margin-left:8px">Old codes stop working. Sign-ups stay open or closed according to the toggle above.</span>

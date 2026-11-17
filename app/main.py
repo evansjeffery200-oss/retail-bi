@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .config import settings
 from .db import Base, SessionLocal, engine
 from .models import Business, User
-from .routers import admin, auth, dashboard, expenses, products, sales, settings as settings_router, stock
+from .routers import admin, auth, dashboard, expenses, help, products, sales, settings as settings_router, stock
 from .security import hash_password, new_signup_code
 from .templating import get_business, templates
 
@@ -30,6 +30,9 @@ def add_late_columns() -> None:
         f"ALTER TABLE business ADD COLUMN signup_open BOOLEAN NOT NULL DEFAULT {boolean_default}",
         "ALTER TABLE business ADD COLUMN signup_code VARCHAR(24)",
         "ALTER TABLE users ADD COLUMN role VARCHAR(16) NOT NULL DEFAULT 'member'",
+        f"ALTER TABLE users ADD COLUMN tour_done BOOLEAN NOT NULL DEFAULT {boolean_default}",
+        "ALTER TABLE business ADD COLUMN support_email VARCHAR(255)",
+        "ALTER TABLE business ADD COLUMN support_phone VARCHAR(40)",
     ]
     for statement in statements:
         try:
@@ -47,6 +50,9 @@ def ensure_business_defaults() -> None:
         changed = False
         if not business.signup_code:
             business.signup_code = new_signup_code()
+            changed = True
+        if not (business.support_email or "").strip():
+            business.support_email = "evansjeffery200@gmail.com"
             changed = True
         if business.signup_open is None:
             business.signup_open = True
@@ -132,6 +138,7 @@ app.include_router(expenses.router)
 app.include_router(sales.router)
 app.include_router(settings_router.router)
 app.include_router(admin.router)
+app.include_router(help.router)
 
 
 @app.get("/healthz")

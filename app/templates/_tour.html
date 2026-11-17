@@ -1,0 +1,49 @@
+{# First-run walkthrough. Shown until the account finishes or skips it, and replayable from the help centre. #}
+<div class="tour" id="tour" hidden>
+  <div class="tour-top">
+    <span class="tour-count"><span data-tour-index>1</span> of <span data-tour-total>6</span></span>
+    <button class="tour-close" type="button" data-tour-skip aria-label="Skip the walkthrough">Skip</button>
+  </div>
+  <h3 data-tour-title>Welcome</h3>
+  <p data-tour-body></p>
+  <div class="tour-dots" data-tour-dots></div>
+  <div class="tour-actions">
+    <button class="btn btn-ghost btn-sm" type="button" data-tour-back>Back</button>
+    <a class="tour-link" data-tour-open href="/" hidden>Open</a>
+    <button class="btn btn-primary btn-sm" type="button" data-tour-next>Next</button>
+  </div>
+</div>
+<script type="application/json" id="tour-steps">
+[
+  {
+    "title": "This is your dashboard",
+    "body": "Four numbers tell the story: sales today, sales this month, gross profit and net after expenses. Gross profit is what is left after the cost of the goods you sold. Net also takes your expenses off.",
+    "href": "/"
+  },
+  {
+    "title": "Start with what you sell",
+    "body": "Add each item under Inventory with a cost price and a selling price. The cost price is what makes profit honest, so keep it current. Set a reorder level and the dashboard will warn you when stock runs low.",
+    "href": "/products"
+  },
+  {
+    "title": "Record a sale",
+    "body": "Open Sales and add a new sale: pick the item, the quantity and the price. Discounts and tax apply to the whole sale, stock drops by itself, and the cost of goods is worked out for you.",
+    "href": "/sales"
+  },
+  {
+    "title": "Bring stock in",
+    "body": "When a delivery arrives, log it under Stock with the quantity and what you paid. The latest purchase price becomes the item's cost price, so the next sale reports the right profit.",
+    "href": "/stock"
+  },
+  {
+    "title": "Log the running costs",
+    "body": "Rent, transport, data, staff. Record them under Expenses. They come straight off gross profit, which is how the dashboard turns into net after expenses.",
+    "href": "/expenses"
+  },
+  {
+    "title": "Everything else lives in Help",
+    "body": "The help centre explains every screen, walks through the tour again whenever you want, and shows how to reach support.{% if user and user.is_admin %} As an administrator you also get Settings for the store name, currency and tax, and Admin for accounts and sign-ups.{% endif %}",
+    "href": "/help"
+  }
+]
+</script>
