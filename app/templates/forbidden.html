@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admins only · Vantiq Retail BI Kit</title>
+  <meta name="theme-color" content="#0a1413" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="auth-mark">V</div>
+        <h1>Admins <em style="color:var(--accent);font-style:italic">only</em></h1>
+        <p>Vantiq Retail BI Kit</p>
+      </div>
+      <div class="card card-body">
+        <p class="card-note" style="font-size:13.5px;line-height:1.7">{{ reason }}</p>
+        <p class="card-note" style="margin-top:10px">
+          Ask an administrator if you need access, or head back to your dashboard.
+        </p>
+        <div class="form-actions"><a class="btn btn-primary btn-block" href="/">Back to dashboard</a></div>
+      </div>
+    </div>
+  </div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

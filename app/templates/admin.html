@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<div class="stack" style="max-width:900px">
+  <header class="page-head">
+    <div>
+      <h1>Admin</h1>
+      <p class="sub">Accounts, roles and who can join this store</p>
+    </div>
+  </header>
+
+  {% if notice %}<div class="panel-soft" style="color:var(--accent);font-size:13px;font-weight:600">{{ notice }}</div>{% endif %}
+  {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+  <section class="kpis">
+    <div class="kpi">
+      <div class="label">Accounts</div>
+      <div class="value">{{ accounts|length }}</div>
+      <div class="meta">Everyone who can sign in</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Administrators</div>
+      <div class="value">{{ admin_count }}</div>
+      <div class="meta">Full access to this page</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Sign-ups</div>
+      <div class="value">{{ 'Open' if business.signup_open else 'Closed' }}</div>
+      <div class="meta">Store code {{ business.signup_code or 'not set' }}</div>
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Accounts</h2>
+      <span class="card-note">You are signed in as {{ user.email }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for account in accounts %}
+            <tr>
+              <td>
+                {{ account.full_name or '—' }}
+                {% if account.id == user.id %}<span class="card-note">(you)</span>{% endif %}
+              </td>
+              <td>{{ account.email }}</td>
+              <td>
+                <span class="badge {{ 'badge-admin' if account.is_admin else 'badge-member' }}">{{ account.role_label }}</span>
+              </td>
+              <td class="card-note">{{ account.created_at|date }}</td>
+              <td>
+                {% if account.id == user.id %}
+                  <div class="admin-actions"><span class="card-note">—</span></div>
+                {% else %}
+                  <div class="admin-actions">
+                    <form action="/admin/accounts/{{ account.id }}/role" method="post">
+                      <input type="hidden" name="role" value="{{ 'member' if account.is_admin else 'admin' }}" />
+                      <button class="btn btn-ghost btn-sm" type="submit">
+                        {{ 'Make member' if account.is_admin else 'Make admin' }}
+                      </button>
+                    </form>
+                    <form action="/admin/accounts/{{ account.id }}/remove" method="post"
+                          onsubmit="return confirm('Remove {{ account.email }}? They will no longer be able to sign in.');">
+                      <button class="btn btn-ghost btn-sm" type="submit">Remove</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <form class="card card-body" action="/admin/signups" method="post">
+    <h2 style="margin-bottom:6px">Sign-ups</h2>
+    <p class="card-note" style="margin-bottom:14px">
+      New accounts join as members: they can sell, take in stock and log expenses, but
+      only administrators open this page or change the store settings. The store code is
+      optional at sign-up and can be pre-filled through the invite link.
+    </p>
+
+    <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600">
+      <input type="checkbox" name="signup_open" {{ 'checked' if business.signup_open }} />
+      Allow people to create an account
+    </label>
+
+    <div style="margin-top:14px;max-width:240px">
+      <label class="label" for="signup_code">Store code</label>
+      <input class="field" id="signup_code" name="signup_code" value="{{ business.signup_code }}" autocomplete="off" />
+    </div>
+
+    <p class="card-note" style="margin-top:10px">
+      Invite link: <span class="mono-break">{{ invite_link }}</span>
+    </p>
+
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Save sign-up settings</button></div>
+  </form>
+
+  <form action="/admin/signups/regenerate" method="post">
+    <button class="btn btn-ghost" type="submit">Create a new store code</button>
+    <span class="card-note" style="margin-left:8px">Old codes stop working. Sign-ups stay open or closed according to the toggle above.</span>
+  </form>
+</div>
+{% endblock %}

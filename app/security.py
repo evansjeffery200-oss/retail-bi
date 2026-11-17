@@ -56,3 +56,10 @@ def optional_user(request: Request, db: Session = Depends(get_db)) -> User | Non
         request.session.clear()
         return None
     return user
+
+
+def require_admin(user: User = Depends(current_user)) -> User:
+    """Admins only. Members get a themed 403 instead of a stack trace."""
+    if not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Administrators only")
+    return user

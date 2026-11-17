@@ -17,11 +17,20 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     full_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    role: Mapped[str] = mapped_column(String(16), default="member", server_default="member")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     @property
     def display_name(self) -> str:
         return (self.full_name or "").strip() or self.email
+
+    @property
+    def is_admin(self) -> bool:
+        return (self.role or "").lower() == "admin"
+
+    @property
+    def role_label(self) -> str:
+        return "Administrator" if self.is_admin else "Member"
 
 
 class Business(Base):

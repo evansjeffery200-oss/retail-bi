@@ -11,9 +11,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .config import settings
 from .db import Base, SessionLocal, engine
 from .models import Business, User
-from .routers import auth, dashboard, expenses, products, sales, settings as settings_router, stock
+from .routers import admin, auth, dashboard, expenses, products, sales, settings as settings_router, stock
 from .security import hash_password, new_signup_code
-from .templating import get_business
+from .templating import get_business, templates
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -29,6 +29,7 @@ def add_late_columns() -> None:
         "ALTER TABLE users ADD COLUMN full_name VARCHAR(120)",
         f"ALTER TABLE business ADD COLUMN signup_open BOOLEAN NOT NULL DEFAULT {boolean_default}",
         "ALTER TABLE business ADD COLUMN signup_code VARCHAR(24)",
+        "ALTER TABLE users ADD COLUMN role VARCHAR(16) NOT NULL DEFAULT 'member'",
     ]
     for statement in statements:
         try:
@@ -80,11 +81,34 @@ def seed_from_env() -> None:
             db.commit()
 
 
+def ensure_roles() -> None:
+    """The account created from the environment is the administrator. If no admin
+    exists at all, the earliest account takes the role so the app is never locked."""
+    with SessionLocal() as db:
+        users = db.scalars(select(User).order_by(User.created_at, User.id)).all()
+        if not users:
+            return
+        changed = False
+        if settings.initial_email:
+            owner = next(
+                (u for u in users if u.email.lower() == settings.initial_email.lower()), None
+            )
+            if owner is not None and not owner.is_admin:
+                owner.role = "admin"
+                changed = True
+        if not any(u.is_admin for u in users):
+            users[0].role = "admin"
+            changed = True
+        if changed:
+            db.commit()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_tables()
     add_late_columns()
     seed_from_env()
+    ensure_roles()
     ensure_business_defaults()
     yield
 
@@ -107,6 +131,7 @@ app.include_router(stock.router)
 app.include_router(expenses.router)
 app.include_router(sales.router)
 app.include_router(settings_router.router)
+app.include_router(admin.router)
 
 
 @app.get("/healthz")
@@ -118,6 +143,13 @@ def healthz():
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code in (303, 307) and exc.headers and "Location" in exc.headers:
         return RedirectResponse(exc.headers["Location"], status_code=303)
+    if exc.status_code == 403:
+        return templates.TemplateResponse(
+            request,
+            "forbidden.html",
+            {"request": request, "reason": exc.detail or "That page is for administrators"},
+            status_code=403,
+        )
     if exc.status_code == 404:
         return HTMLResponse(
             "<main style='font-family:system-ui;padding:48px'>"
