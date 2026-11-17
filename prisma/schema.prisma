@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Business {
+  id              String  @id @default(cuid())
+  name            String  @default("My Store")
+  currencyCode    String  @default("NGN")
+  currencyLocale  String  @default("en-NG")
+  taxEnabled      Boolean @default(false)
+  taxRate         Float   @default(0)
+}
+
+model Product {
+  id           String         @id @default(cuid())
+  name         String
+  sku          String?
+  category     String?
+  supplier     String?
+  costPrice    Int            @default(0) // minor units
+  sellingPrice Int            @default(0) // minor units
+  openingStock Int            @default(0)
+  reorderLevel Int            @default(0)
+  archived     Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  receipts     StockReceipt[]
+  saleItems    SaleItem[]
+
+  @@index([name])
+}
+
+model StockReceipt {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  unitCost  Int      @default(0)
+  totalCost Int      @default(0)
+  supplier  String?
+  date      DateTime @default(now())
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model Sale {
+  id            String     @id @default(cuid())
+  reference     String     @unique
+  date          DateTime   @default(now())
+  paymentMethod String     @default("Cash")
+  customerName  String?
+  notes         String?
+  subtotal      Int        @default(0)
+  discountTotal Int        @default(0)
+  taxAmount     Int        @default(0)
+  total         Int        @default(0)
+  cogs          Int        @default(0)
+  grossProfit   Int        @default(0)
+  items         SaleItem[]
+  createdAt     DateTime   @default(now())
+
+  @@index([date])
+}
+
+model SaleItem {
+  id        String  @id @default(cuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name      String
+  quantity  Int
+  unitPrice Int
+  unitCost  Int     @default(0)
+  lineTotal Int
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model Expense {
+  id            String   @id @default(cuid())
+  description   String
+  category      String?
+  amount        Int
+  date          DateTime @default(now())
+  payee         String?
+  paymentMethod String   @default("Cash")
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  @@index([date])
+}

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: retail-bi
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /login
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: INITIAL_EMAIL
+        sync: false
+      - key: INITIAL_PASSWORD
+        sync: false
+      - key: BUSINESS_NAME
+        sync: false
+      - key: CURRENCY_CODE
+        value: NGN
+      - key: CURRENCY_LOCALE
+        value: en-NG
