@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models import User
 from ..security import clean_signup_code, hash_password, verify_password
-from ..templating import get_business, templates
+from ..templating import get_business, store_label, templates
 
 router = APIRouter()
 
@@ -21,6 +21,7 @@ def _page(request, template, business, **extra):
     data = {
         "request": request,
         "business": business,
+        "store_label": store_label(business),
         "signup_open": bool(business.signup_open),
     }
     data.update(extra)

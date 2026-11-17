@@ -28,7 +28,7 @@ class Business(Base):
     __tablename__ = "business"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(160), default="My Store")
+    name: Mapped[str] = mapped_column(String(160), default="")
     currency_code: Mapped[str] = mapped_column(String(8), default="NGN")
     currency_locale: Mapped[str] = mapped_column(String(16), default="en-NG")
     tax_enabled: Mapped[bool] = mapped_column(Boolean, default=False)

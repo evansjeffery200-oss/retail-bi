@@ -42,7 +42,7 @@ def load_settings() -> Settings:
         session_secret=secret,
         initial_email=os.getenv("INITIAL_EMAIL", "").strip().lower(),
         initial_password=os.getenv("INITIAL_PASSWORD", ""),
-        business_name=os.getenv("BUSINESS_NAME", "My Store"),
+        business_name=os.getenv("BUSINESS_NAME", ""),
         currency_code=os.getenv("CURRENCY_CODE", "NGN"),
         currency_locale=os.getenv("CURRENCY_LOCALE", "en-NG"),
         tax_enabled=_bool(os.getenv("TAX_ENABLED"), False),

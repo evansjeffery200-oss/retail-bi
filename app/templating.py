@@ -24,6 +24,13 @@ def get_business(db: Session) -> Business:
     return business
 
 
+def store_label(business: Business) -> str:
+    """The store's own name, or a neutral label when it has not been set.
+    The seeded placeholder name is deliberately not shown."""
+    name = (business.name or "").strip()
+    return name if name else "Your store"
+
+
 def ctx(request: Request, business: Business, user=None, **extra):
     def fmt(minor) -> str:
         return format_money(minor, business.currency_code, business.currency_locale)
@@ -31,6 +38,7 @@ def ctx(request: Request, business: Business, user=None, **extra):
     base = {
         "request": request,
         "business": business,
+        "store_label": store_label(business),
         "user": user,
         "fmt": fmt,
         "today": today_input(),
