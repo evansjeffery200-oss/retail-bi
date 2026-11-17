@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<div class="stack">
+  <header class="page-head">
+    <div>
+      <h1>Products</h1>
+      <p class="sub">{{ products | length }} active {{ 'product' if products | length == 1 else 'products' }}</p>
+    </div>
+  </header>
+
+  <form class="card card-body" action="/products" method="post">
+    <h2 style="margin-bottom:14px">Add a product</h2>
+    <div class="form-grid">
+      <div class="span-2">
+        <label class="label" for="name">Name</label>
+        <input class="field" id="name" name="name" required placeholder="Rolex Datejust 41" />
+      </div>
+      <div>
+        <label class="label" for="sku">SKU</label>
+        <input class="field" id="sku" name="sku" placeholder="RLX-DJ41" />
+      </div>
+      <div>
+        <label class="label" for="category">Category</label>
+        <input class="field" id="category" name="category" placeholder="Watches" />
+      </div>
+      <div>
+        <label class="label" for="supplier">Supplier</label>
+        <input class="field" id="supplier" name="supplier" />
+      </div>
+      <div>
+        <label class="label" for="cost_price">Cost price</label>
+        <input class="field" id="cost_price" name="cost_price" inputmode="decimal" placeholder="0.00" />
+      </div>
+      <div>
+        <label class="label" for="selling_price">Selling price</label>
+        <input class="field" id="selling_price" name="selling_price" inputmode="decimal" placeholder="0.00" />
+      </div>
+      <div>
+        <label class="label" for="opening_stock">Opening stock</label>
+        <input class="field" id="opening_stock" name="opening_stock" inputmode="numeric" placeholder="0" />
+      </div>
+      <div>
+        <label class="label" for="reorder_level">Reorder level</label>
+        <input class="field" id="reorder_level" name="reorder_level" inputmode="numeric" placeholder="0" />
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Add product</button></div>
+  </form>
+
+  <div class="card">
+    {% if products %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Product</th><th>SKU</th><th>Category</th>
+              <th class="num">Cost</th><th class="num">Price</th><th class="num">Margin</th>
+              <th class="num">Opening</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+              <tr>
+                <td class="strong">{{ product.name }}</td>
+                <td class="muted">{{ product.sku or '—' }}</td>
+                <td class="muted">{{ product.category or '—' }}</td>
+                <td class="num">{{ fmt(product.cost_price) }}</td>
+                <td class="num">{{ fmt(product.selling_price) }}</td>
+                <td class="num" style="color:{{ 'var(--accent)' if product.selling_price >= product.cost_price else 'var(--danger)' }}">
+                  {{ fmt(product.selling_price - product.cost_price) }}
+                </td>
+                <td class="num muted">{{ product.opening_stock }}</td>
+                <td>
+                  <div class="row-actions">
+                    <a href="/products/{{ product.id }}/edit" style="font-size:12px;font-weight:600">Edit</a>
+                    <form action="/products/{{ product.id }}/archive" method="post">
+                      <button type="submit">Archive</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No products yet. Add your first one above.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

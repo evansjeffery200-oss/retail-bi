@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}New sale{% endblock %}
+{% block content %}
+<div class="stack">
+  <header class="page-head">
+    <div>
+      <a class="back" href="/sales">← Sales</a>
+      <h1 style="margin-top:6px">New sale</h1>
+    </div>
+  </header>
+
+  <form id="sale-form">
+    <div class="card card-body" style="margin-bottom:16px">
+      <div class="form-grid">
+        <div>
+          <label class="label" for="date">Date</label>
+          <input class="field" id="date" type="date" value="{{ today }}" />
+        </div>
+        <div>
+          <label class="label" for="payment">Payment</label>
+          <select class="field" id="payment">
+            <option>Cash</option><option>Transfer</option><option>Card</option><option>POS</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="customer">Customer</label>
+          <input class="field" id="customer" placeholder="Walk-in" />
+        </div>
+        <div>
+          <label class="label" for="discount">Discount</label>
+          <input class="field" id="discount" inputmode="decimal" placeholder="0.00" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="table-wrap">
+        <table class="data" id="lines">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="num" style="width:100px">Qty</th>
+              <th class="num" style="width:150px">Unit price</th>
+              <th class="num" style="width:130px">Line</th>
+              <th style="width:90px"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card-body" style="padding-top:0">
+        <button class="btn btn-ghost" type="button" id="add-line">Add line</button>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card card-body">
+        <label class="label" for="notes">Notes</label>
+        <textarea class="field" id="notes" rows="3"></textarea>
+      </div>
+      <div class="card card-body">
+        <div class="totals" style="max-width:none">
+          <div class="line"><span class="muted">Subtotal</span><span id="t-subtotal">{{ fmt(0) }}</span></div>
+          <div class="line"><span class="muted">Discount</span><span id="t-discount">−{{ fmt(0) }}</span></div>
+          <div class="line" id="tax-line" style="display:none"><span class="muted">Tax ({{ business.tax_rate }}%)</span><span id="t-tax">{{ fmt(0) }}</span></div>
+          <div class="line total"><span>Total</span><span id="t-total">{{ fmt(0) }}</span></div>
+        </div>
+        <div id="error" class="alert" style="display:none;margin-top:12px"></div>
+        <button class="btn btn-primary btn-block" type="submit" id="save" style="margin-top:14px">Save sale</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const PRODUCTS = [
+    {% for product in products %}
+    { id: {{ product.id }}, name: {{ product.name | tojson }}, price: {{ (product.selling_price / 100) | round(2) }}, stock: {{ available.get(product.id, product.opening_stock) }} }{{ "," if not loop.last }}
+    {% endfor %}
+  ];
+  const TAX_ENABLED = {{ 'true' if business.tax_enabled and business.tax_rate else 'false' }};
+  const TAX_RATE = {{ business.tax_rate or 0 }};
+  const CURRENCY = {{ business.currency_code | tojson }};
+
+  const money = (minor) => {
+    const amount = Math.abs(minor) / 100;
+    const body = amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (minor < 0 ? "-" : "") + CURRENCY + " " + body;
+  };
+
+  const tbody = document.querySelector("#lines tbody");
+  const errorBox = document.getElementById("error");
+  let seq = 0;
+
+  function addRow() {
+    seq += 1;
+    const tr = document.createElement("tr");
+    const first = PRODUCTS[0] || null;
+    tr.innerHTML = `
+      <td>
+        <select class="field js-product">
+          <option value="">Select a product</option>
+          ${PRODUCTS.map((p) => `<option value="${p.id}">${p.name} (${p.stock} in stock)</option>`).join("")}
+        </select>
+      </td>
+      <td><input class="field num js-qty" value="1" inputmode="numeric" /></td>
+      <td><input class="field num js-price" value="${first ? first.price.toFixed(2) : ""}" inputmode="decimal" /></td>
+      <td class="num js-line">${money(0)}</td>
+      <td><div class="row-actions"><button type="button" class="js-remove">Remove</button></div></td>
+    `;
+    tbody.appendChild(tr);
+
+    const select = tr.querySelector(".js-product");
+    if (first) select.value = String(first.id);
+
+    select.addEventListener("change", () => {
+      const product = PRODUCTS.find((p) => String(p.id) === select.value);
+      if (product) tr.querySelector(".js-price").value = product.price.toFixed(2);
+      recalc();
+    });
+    tr.querySelector(".js-qty").addEventListener("input", recalc);
+    tr.querySelector(".js-price").addEventListener("input", recalc);
+    tr.querySelector(".js-remove").addEventListener("click", () => {
+      if (tbody.children.length > 1) tr.remove();
+      recalc();
+    });
+    recalc();
+  }
+
+  function readLines() {
+    return [...tbody.querySelectorAll("tr")].map((tr) => {
+      const id = tr.querySelector(".js-product").value;
+      const product = PRODUCTS.find((p) => String(p.id) === id);
+      return {
+        productId: id ? Number(id) : null,
+        name: product ? product.name : "",
+        quantity: Number(tr.querySelector(".js-qty").value) || 0,
+        unitPrice: Number(tr.querySelector(".js-price").value) || 0,
+        lineCell: tr.querySelector(".js-line"),
+      };
+    });
+  }
+
+  function recalc() {
+    const lines = readLines();
+    let subtotal = 0;
+    for (const line of lines) {
+      const minor = Math.round(line.unitPrice * 100) * line.quantity;
+      line.lineCell.textContent = money(minor);
+      subtotal += minor;
+    }
+    const discount = Math.min(Math.round((Number(document.getElementById("discount").value) || 0) * 100), subtotal);
+    const taxable = subtotal - discount;
+    const tax = TAX_ENABLED && TAX_RATE ? Math.round((taxable * TAX_RATE) / 100) : 0;
+
+    document.getElementById("t-subtotal").textContent = money(subtotal);
+    document.getElementById("t-discount").textContent = "−" + money(discount);
+    document.getElementById("t-tax").textContent = money(tax);
+    document.getElementById("tax-line").style.display = tax > 0 ? "flex" : "none";
+    document.getElementById("t-total").textContent = money(taxable + tax);
+  }
+
+  document.getElementById("add-line").addEventListener("click", addRow);
+  document.getElementById("discount").addEventListener("input", recalc);
+
+  document.getElementById("sale-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    errorBox.style.display = "none";
+
+    const items = readLines()
+      .filter((line) => line.name && line.quantity > 0)
+      .map((line) => ({ product_id: line.productId, name: line.name, quantity: line.quantity, unit_price: line.unitPrice }));
+
+    if (items.length === 0) {
+      errorBox.textContent = "Add at least one product line with a quantity.";
+      errorBox.style.display = "block";
+      return;
+    }
+
+    const button = document.getElementById("save");
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+      const response = await fetch("/api/sales", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: document.getElementById("date").value,
+          payment_method: document.getElementById("payment").value,
+          customer_name: document.getElementById("customer").value,
+          notes: document.getElementById("notes").value,
+          discount_total: Number(document.getElementById("discount").value) || 0,
+          items,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || data.detail || "Could not save the sale.");
+      }
+      window.location.href = "/sales/" + data.id;
+    } catch (error) {
+      errorBox.textContent = error.message === "Failed to fetch"
+        ? "Could not reach the server. Check your connection and try again."
+        : error.message;
+      errorBox.style.display = "block";
+      button.disabled = false;
+      button.textContent = "Save sale";
+    }
+  });
+
+  addRow();
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Retail BI{% endblock %} · {{ business.name }}</title>
+  <link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">R</div>
+        <div>
+          <div class="brand-name">{{ business.name }}</div>
+          <div class="brand-sub">{{ business.currency_code }}</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="/" class="{{ 'active' if active == 'dashboard' }}">Dashboard</a>
+        <a href="/sales" class="{{ 'active' if active == 'sales' }}">Sales</a>
+        <a href="/products" class="{{ 'active' if active == 'products' }}">Products</a>
+        <a href="/stock" class="{{ 'active' if active == 'stock' }}">Stock</a>
+        <a href="/expenses" class="{{ 'active' if active == 'expenses' }}">Expenses</a>
+        <a href="/settings" class="{{ 'active' if active == 'settings' }}">Settings</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <span class="email">{{ user.email if user else '' }}</span>
+        <form action="/logout" method="post"><button type="submit">Sign out</button></form>
+      </div>
+    </aside>
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

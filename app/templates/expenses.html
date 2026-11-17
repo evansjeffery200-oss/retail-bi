@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Expenses{% endblock %}
+{% block content %}
+<div class="stack">
+  <header class="page-head">
+    <div>
+      <h1>Expenses</h1>
+      <p class="sub">{{ fmt(month_total) }} recorded this month</p>
+    </div>
+  </header>
+
+  <form class="card card-body" action="/expenses" method="post">
+    <h2 style="margin-bottom:14px">Log an expense</h2>
+    <div class="form-grid">
+      <div class="span-2">
+        <label class="label" for="description">Description</label>
+        <input class="field" id="description" name="description" required placeholder="Shop rent for November" />
+      </div>
+      <div>
+        <label class="label" for="amount">Amount</label>
+        <input class="field" id="amount" name="amount" inputmode="decimal" required placeholder="0.00" />
+      </div>
+      <div>
+        <label class="label" for="date">Date</label>
+        <input class="field" id="date" name="date" type="date" value="{{ today }}" />
+      </div>
+      <div>
+        <label class="label" for="category">Category</label>
+        <select class="field" id="category" name="category">
+          {% for category in categories %}<option value="{{ category }}">{{ category }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="label" for="payee">Paid to</label>
+        <input class="field" id="payee" name="payee" />
+      </div>
+      <div>
+        <label class="label" for="payment_method">Method</label>
+        <select class="field" id="payment_method" name="payment_method">
+          <option>Cash</option><option>Transfer</option><option>Card</option><option>POS</option>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="notes">Notes</label>
+        <input class="field" id="notes" name="notes" />
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Save expense</button></div>
+  </form>
+
+  {% if by_category %}
+    <div class="card card-body">
+      <h2 style="margin-bottom:12px">Where it goes</h2>
+      <div class="form-grid">
+        {% for category, total in by_category %}
+          <div class="panel-soft" style="display:flex;justify-content:space-between;gap:10px">
+            <span>{{ category }}</span>
+            <span class="strong">{{ fmt(total) }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="card">
+    {% if expenses %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Date</th><th>Description</th><th>Category</th><th>Paid to</th><th>Method</th><th class="num">Amount</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for expense in expenses %}
+              <tr>
+                <td class="muted">{{ expense.date | date }}</td>
+                <td class="strong">{{ expense.description }}</td>
+                <td class="muted">{{ expense.category or '—' }}</td>
+                <td class="muted">{{ expense.payee or '—' }}</td>
+                <td class="muted">{{ expense.payment_method }}</td>
+                <td class="num">{{ fmt(expense.amount) }}</td>
+                <td>
+                  <div class="row-actions">
+                    <form action="/expenses/{{ expense.id }}/delete" method="post">
+                      <button type="submit">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No expenses logged yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

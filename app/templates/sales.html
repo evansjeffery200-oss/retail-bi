@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+<div class="stack">
+  <header class="page-head">
+    <div>
+      <h1>Sales</h1>
+      <p class="sub">Last {{ sales | length }} · {{ fmt(total) }} revenue · {{ fmt(profit) }} gross profit</p>
+    </div>
+    <div class="head-actions"><a class="btn btn-primary" href="/sales/new">New sale</a></div>
+  </header>
+
+  <div class="card">
+    {% if sales %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Reference</th><th>Date</th><th>Customer</th><th>Payment</th><th class="num">Items</th><th class="num">Total</th><th class="num">Gross profit</th></tr>
+          </thead>
+          <tbody>
+            {% for sale in sales %}
+              <tr>
+                <td class="strong"><a href="/sales/{{ sale.id }}">{{ sale.reference }}</a></td>
+                <td class="muted">{{ sale.date | date }}</td>
+                <td class="muted">{{ sale.customer_name or '—' }}</td>
+                <td class="muted">{{ sale.payment_method }}</td>
+                <td class="num">{{ counts.get(sale.id, 0) }}</td>
+                <td class="num strong">{{ fmt(sale.total) }}</td>
+                <td class="num" style="color:var(--accent)">{{ fmt(sale.gross_profit) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No sales yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

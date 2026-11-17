@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="stack" style="max-width:680px">
+  <header class="page-head">
+    <div>
+      <h1>Settings</h1>
+      <p class="sub">Store identity, currency and tax</p>
+    </div>
+  </header>
+
+  <form class="card card-body" action="/settings" method="post">
+    <div style="margin-bottom:14px">
+      <label class="label" for="name">Store name</label>
+      <input class="field" id="name" name="name" value="{{ business.name }}" />
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label class="label" for="currency_code">Currency code</label>
+        <input class="field" id="currency_code" name="currency_code" value="{{ business.currency_code }}" placeholder="NGN" />
+      </div>
+      <div>
+        <label class="label" for="currency_locale">Currency locale</label>
+        <input class="field" id="currency_locale" name="currency_locale" value="{{ business.currency_locale }}" placeholder="en-NG" />
+      </div>
+    </div>
+
+    <div class="panel-soft" style="margin-top:14px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600">
+        <input type="checkbox" name="tax_enabled" {{ 'checked' if business.tax_enabled }} />
+        Charge tax on sales
+      </label>
+      <div style="max-width:160px;margin-top:12px">
+        <label class="label" for="tax_rate">Tax rate (%)</label>
+        <input class="field" id="tax_rate" name="tax_rate" value="{{ business.tax_rate }}" inputmode="decimal" />
+      </div>
+    </div>
+
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Save settings</button></div>
+  </form>
+
+  <div class="card card-body">
+    <h2 style="margin-bottom:8px">About logins</h2>
+    <p class="card-note">
+      This build has one account. To change the password, update <code>INITIAL_PASSWORD</code> and restart the
+      service; the existing account's hash is replaced rather than a second account being created.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,81 +1,97 @@
 # Retail BI
 
-A self-hosted retail dashboard: products, stock receipts, sales, expenses, and profit reporting.
-Built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Prisma, and PostgreSQL.
+A self-hosted retail dashboard: products, stock, sales, expenses and profit reporting.
+Python backend (FastAPI + SQLAlchemy), PostgreSQL database, server-rendered pages. No Node, no Base44.
 
-Nothing here depends on Base44. You own the code and the database.
+You own the code and the data. Nothing here phones home.
+
+## Stack
+
+| Layer | Choice |
+| --- | --- |
+| Web framework | FastAPI + Uvicorn |
+| Database access | SQLAlchemy 2.0 (typed ORM) |
+| Database | PostgreSQL (psycopg 3); SQLite works for local testing |
+| Templating | Jinja2, server-rendered HTML |
+| Auth | bcrypt password hash + signed session cookie |
+| Styling | one plain CSS file, no build step |
 
 ## What it does
 
 - **Dashboard** — sales today, sales this month, gross profit, net after expenses, 7-day revenue bars, top sellers, low-stock list, recent sales.
-- **Products** — add, edit, archive; cost price, selling price, opening stock, reorder level, margin shown per row.
-- **Stock** — receive stock (opening + receipts − sold), value on hand at cost, low-stock flags, receipt history. Receiving at a new unit cost updates the product cost price so profit stays honest.
-- **Sales** — multi-line sale entry with discounts and optional tax, sequential references (`S-261117-001`), COGS and gross profit stored per sale.
-- **Expenses** — dated expenses with category, payee, method, and spend-by-category breakdown.
+- **Products** — add, edit, archive; cost price, selling price, opening stock, reorder level, margin per row.
+- **Stock** — opening stock plus receipts minus units sold, value on hand at cost, low-stock flags, receipt history. Receiving stock at a new unit cost updates the product cost price so profit stays honest.
+- **Sales** — multi-line entry with discounts and optional tax, sequential references like `S-261117-001`, COGS and gross profit stored on every sale.
+- **Expenses** — dated expenses with category, payee, method, plus a spend-by-category breakdown.
 - **Settings** — store name, currency code and locale, tax on/off and rate.
 
-Money is stored as integer minor units (kobo/cents), so totals never drift from floating point.
+Money is stored as integer minor units (kobo/cents), so totals never drift.
 
 ## Run it locally
 
 ```bash
-npm install
-cp .env.example .env      # fill in DATABASE_URL, SESSION_SECRET, INITIAL_EMAIL, INITIAL_PASSWORD
-npx prisma db push        # create the tables
-npm run db:seed           # create your login + store settings
-npm run dev               # http://localhost:3000
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env       # then edit it
+uvicorn app.main:app --reload
 ```
 
-You need a Postgres database. Locally, the quickest is Docker:
+Open http://127.0.0.1:8000. Tables and your login are created on first startup from the env vars.
+
+Quick local run without Postgres:
 
 ```bash
-docker run --name retail-pg -e POSTGRES_PASSWORD=pass -p 5432:5432 -d postgres:16
-# DATABASE_URL="postgresql://postgres:pass@localhost:5432/postgres"
+DATABASE_URL="sqlite:///./retail.db" \
+SESSION_SECRET="dev-secret-change-me-please" \
+INITIAL_EMAIL="you@example.com" \
+INITIAL_PASSWORD="pass1234" \
+uvicorn app.main:app --reload
 ```
-
-Generate a `SESSION_SECRET` with `openssl rand -base64 48`.
 
 ## Deploy to Render
 
-1. Put this folder in a GitHub repo.
-2. Create a free Postgres at [neon.tech](https://neon.tech) (or use Render Postgres) and copy its connection string.
-3. On Render: **New → Web Service**, pick the repo.
-   - Build command: `npm ci && npm run build`
-   - Start command: `npm start`
-4. Add environment variables: `DATABASE_URL`, `SESSION_SECRET`, `INITIAL_EMAIL`, `INITIAL_PASSWORD`, `BUSINESS_NAME`, `CURRENCY_CODE`, `CURRENCY_LOCALE`.
-5. After the first deploy, open the Render Shell and run:
-   ```bash
-   npx prisma db push
-   npm run db:seed
-   ```
-6. Open the service URL and sign in with `INITIAL_EMAIL` / `INITIAL_PASSWORD`.
+1. This folder is already a GitHub repo. On Render: **New → Web Service**, pick the repo.
+2. Settings:
+   - Runtime: Python
+   - Build command: `pip install -r requirements.txt`
+   - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - Health check path: `/healthz`
+3. Environment variables: `DATABASE_URL`, `SESSION_SECRET`, `INITIAL_EMAIL`, `INITIAL_PASSWORD`, `BUSINESS_NAME`, `COOKIE_SECURE=true`.
+   `render.yaml` in this repo sets most of this up as a blueprint.
+4. Get the Postgres URL from [neon.tech](https://neon.tech) (free tier is fine) and paste it as `DATABASE_URL`.
+5. Deploy, open the URL, sign in. Tables and the account are created automatically at startup, so there is no shell step.
 
-`render.yaml` in this folder does steps 3 and 4 as a blueprint if you prefer that route.
+Generate a `SESSION_SECRET` with `python -c "import secrets;print(secrets.token_urlsafe(48))"`.
 
-## Changing your password
+## Environment variables
 
-Re-run the seed with a new `INITIAL_PASSWORD`. It updates the existing account instead of creating a second one:
-
-```bash
-INITIAL_EMAIL="you@example.com" INITIAL_PASSWORD="new-password" npm run db:seed
-```
-
-## Things this build does not include
-
-- Multiple staff accounts or roles (single login by design).
-- PDF invoices or receipts.
-- Supplier purchase orders and partial payments.
-- CSV import/export, though the tables are plain Postgres if you want to query them directly.
-
-Say the word and any of those can be added.
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string. `postgres://` and `postgresql://` prefixes are both accepted. |
+| `SESSION_SECRET` | Signs the session cookie. Required in production. |
+| `INITIAL_EMAIL` | Login email. Created on startup, or updated if it already exists. |
+| `INITIAL_PASSWORD` | Login password. Replaced on every startup, so restarting with a new value changes the password. |
+| `BUSINESS_NAME` | Store name used when the database is first created. |
+| `CURRENCY_CODE` / `CURRENCY_LOCALE` | Currency defaults, e.g. `NGN` / `en-NG`. |
+| `COOKIE_SECURE` | Set `true` when served over HTTPS so the cookie is Secure. |
 
 ## Layout
 
 ```
-prisma/schema.prisma    data model
-prisma/seed.ts          first login + store settings
-src/lib/                auth, money, stock, prisma client
-src/app/(app)/          authenticated pages
-src/app/api/sales       sale creation endpoint
-src/components/         nav and sale form
+app/main.py           app setup, tables, first-run seed
+app/models.py         SQLAlchemy models
+app/routers/          dashboard, products, stock, sales, expenses, settings, auth
+app/templates/        Jinja2 pages
+app/static/app.css    styles
+app/money.py          minor-unit money helpers
+app/stock.py          stock level calculations
 ```
+
+## Not included yet
+
+- Multiple staff accounts or roles (single login by design).
+- PDF invoices or receipts.
+- Purchase orders and supplier payments.
+- CSV import/export. The tables are plain Postgres, so you can query them directly meanwhile.

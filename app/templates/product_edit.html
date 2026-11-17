@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Edit product{% endblock %}
+{% block content %}
+<div class="stack" style="max-width:680px">
+  <header class="page-head">
+    <div>
+      <a class="back" href="/products">← Products</a>
+      <h1 style="margin-top:6px">Edit product</h1>
+      <p class="sub">Prices in {{ business.currency_code }}</p>
+    </div>
+  </header>
+
+  <form class="card card-body" action="/products/{{ product.id }}" method="post">
+    <div class="form-grid">
+      <div class="span-2">
+        <label class="label" for="name">Name</label>
+        <input class="field" id="name" name="name" value="{{ product.name }}" required />
+      </div>
+      <div>
+        <label class="label" for="sku">SKU</label>
+        <input class="field" id="sku" name="sku" value="{{ product.sku or '' }}" />
+      </div>
+      <div>
+        <label class="label" for="category">Category</label>
+        <input class="field" id="category" name="category" value="{{ product.category or '' }}" />
+      </div>
+      <div>
+        <label class="label" for="supplier">Supplier</label>
+        <input class="field" id="supplier" name="supplier" value="{{ product.supplier or '' }}" />
+      </div>
+      <div>
+        <label class="label" for="cost_price">Cost price</label>
+        <input class="field" id="cost_price" name="cost_price" value="{{ '%.2f' | format(product.cost_price / 100) }}" inputmode="decimal" />
+      </div>
+      <div>
+        <label class="label" for="selling_price">Selling price</label>
+        <input class="field" id="selling_price" name="selling_price" value="{{ '%.2f' | format(product.selling_price / 100) }}" inputmode="decimal" />
+      </div>
+      <div>
+        <label class="label" for="opening_stock">Opening stock</label>
+        <input class="field" id="opening_stock" name="opening_stock" value="{{ product.opening_stock }}" inputmode="numeric" />
+      </div>
+      <div>
+        <label class="label" for="reorder_level">Reorder level</label>
+        <input class="field" id="reorder_level" name="reorder_level" value="{{ product.reorder_level }}" inputmode="numeric" />
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Save changes</button></div>
+  </form>
+</div>
+{% endblock %}

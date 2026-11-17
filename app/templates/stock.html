@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Stock{% endblock %}
+{% block content %}
+<div class="stack">
+  <header class="page-head">
+    <div>
+      <h1>Stock</h1>
+      <p class="sub">Opening stock plus receipts minus units sold · {{ fmt(total_value) }} on hand at cost</p>
+    </div>
+  </header>
+
+  {% if products %}
+    <form class="card card-body" action="/stock/receipts" method="post">
+      <h2 style="margin-bottom:14px">Receive stock</h2>
+      <div class="form-grid">
+        <div class="span-2">
+          <label class="label" for="product_id">Product</label>
+          <select class="field" id="product_id" name="product_id" required>
+            <option value="">Select a product</option>
+            {% for product in products %}
+              <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="label" for="quantity">Quantity</label>
+          <input class="field" id="quantity" name="quantity" inputmode="numeric" required placeholder="10" />
+        </div>
+        <div>
+          <label class="label" for="unit_cost">Unit cost</label>
+          <input class="field" id="unit_cost" name="unit_cost" inputmode="decimal" placeholder="0.00" />
+        </div>
+        <div>
+          <label class="label" for="date">Date</label>
+          <input class="field" id="date" name="date" type="date" value="{{ today }}" />
+        </div>
+        <div class="span-2">
+          <label class="label" for="supplier">Supplier</label>
+          <input class="field" id="supplier" name="supplier" />
+        </div>
+        <div>
+          <label class="label" for="notes">Notes</label>
+          <input class="field" id="notes" name="notes" />
+        </div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Add receipt</button></div>
+    </form>
+  {% else %}
+    <p class="card card-body empty">Add a product first, then you can receive stock.</p>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-head"><h2>Current stock</h2></div>
+    {% if rows %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Product</th><th class="num">Opening</th><th class="num">Received</th>
+              <th class="num">Sold</th><th class="num">In stock</th><th class="num">Reorder at</th>
+              <th class="num">Value at cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td class="strong">
+                  {{ row.name }}
+                  {% if row.is_low %}<span class="pill pill-low" style="margin-left:8px">Low</span>{% endif %}
+                </td>
+                <td class="num muted">{{ row.opening_stock }}</td>
+                <td class="num muted">{{ row.received }}</td>
+                <td class="num muted">{{ row.sold }}</td>
+                <td class="num strong" {% if row.is_low %}style="color:var(--warn)"{% endif %}>{{ row.current_stock }}</td>
+                <td class="num muted">{{ row.reorder_level or '—' }}</td>
+                <td class="num">{{ fmt(row.stock_value) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">Nothing tracked yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Recent receipts</h2></div>
+    {% if receipts %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Date</th><th>Product</th><th class="num">Qty</th><th class="num">Unit cost</th><th class="num">Total</th><th>Supplier</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for receipt in receipts %}
+              <tr>
+                <td class="muted">{{ receipt.date | date }}</td>
+                <td class="strong">{{ receipt.product.name }}</td>
+                <td class="num">{{ receipt.quantity }}</td>
+                <td class="num">{{ fmt(receipt.unit_cost) }}</td>
+                <td class="num">{{ fmt(receipt.total_cost) }}</td>
+                <td class="muted">{{ receipt.supplier or '—' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <form action="/stock/receipts/{{ receipt.id }}/delete" method="post">
+                      <button type="submit">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No stock received yet.</p>
+    {% endif %}
+  </div>
+
+  <p class="card-note">
+    Receiving stock with a unit cost also updates that product's cost price, so profit stays accurate.
+  </p>
+</div>
+{% endblock %}

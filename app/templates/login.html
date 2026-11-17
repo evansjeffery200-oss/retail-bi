@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in · Retail BI</title>
+  <link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="auth-mark">R</div>
+        <h1>Retail BI</h1>
+        <p>Sign in to your shop dashboard</p>
+      </div>
+
+      <form class="card card-body" action="/login" method="post">
+        <div style="margin-bottom:14px">
+          <label class="label" for="email">Email</label>
+          <input class="field" id="email" name="email" type="email" autocomplete="username" value="{{ email }}" required />
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="label" for="password">Password</label>
+          <input class="field" id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+
+        {% if error %}<div class="alert" style="margin-bottom:12px">{{ error }}</div>{% endif %}
+
+        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+      <p class="auth-foot">
+        First time? Set <code>INITIAL_EMAIL</code> and <code>INITIAL_PASSWORD</code>,
+        restart the service, and that account is created automatically.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

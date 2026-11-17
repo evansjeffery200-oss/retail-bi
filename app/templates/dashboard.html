@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="stack">
+  <header class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="sub">{{ now.strftime('%A, %-d %B %Y') }}</p>
+    </div>
+    <div class="head-actions">
+      <a class="btn btn-primary" href="/sales/new">New sale</a>
+      <a class="btn btn-ghost" href="/expenses">Log expense</a>
+    </div>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi">
+      <span class="label">Sales today</span>
+      <div class="value">{{ fmt(today_total) }}</div>
+      <div class="meta">{{ today_count }} {{ 'transaction' if today_count == 1 else 'transactions' }}</div>
+    </div>
+    <div class="kpi">
+      <span class="label">Sales this month</span>
+      <div class="value">{{ fmt(month_total) }}</div>
+      <div class="meta">{{ month_count }} {{ 'transaction' if month_count == 1 else 'transactions' }}</div>
+    </div>
+    <div class="kpi">
+      <span class="label">Gross profit (month)</span>
+      <div class="value good">{{ fmt(month_gross) }}</div>
+      <div class="meta">COGS {{ fmt(month_cogs) }}</div>
+    </div>
+    <div class="kpi">
+      <span class="label">Net after expenses</span>
+      <div class="value {{ 'good' if net >= 0 else 'bad' }}">{{ fmt(net) }}</div>
+      <div class="meta">Expenses {{ fmt(month_expenses) }}</div>
+    </div>
+  </section>
+
+  <section class="grid two">
+    <div class="card">
+      <div class="card-head">
+        <h2>Last 7 days</h2>
+        <span class="card-note">Peak {{ fmt(peak) }} · Stock at cost {{ fmt(stock_value) }}</span>
+      </div>
+      <div class="card-body">
+        <div class="chart">
+          {% for day in days %}
+            {% set height = (day.total / peak * 100) if peak else 0 %}
+            <div class="chart-col">
+              <div class="chart-track">
+                <div class="chart-bar {{ 'faint' if day.total == 0 }}" style="height: {{ [height, 2] | max }}%" title="{{ fmt(day.total) }}"></div>
+              </div>
+              <span class="chart-label">{{ day.label }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Top sellers this month</h2></div>
+      <div class="card-body tight">
+        {% if top_items %}
+          <ul class="list">
+            {% for item in top_items %}
+              <li>
+                <span class="name">{{ item.name }}</span>
+                <span class="meta">{{ item.qty }} × · {{ fmt(item.revenue) }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty">No sales recorded yet this month.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="grid even">
+    <div class="card">
+      <div class="card-head">
+        <h2>Low stock</h2>
+        <a class="card-note" href="/stock">Manage stock</a>
+      </div>
+      {% if low_stock %}
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Product</th><th class="num">In stock</th><th class="num">Reorder at</th></tr></thead>
+            <tbody>
+              {% for row in low_stock[:6] %}
+                <tr>
+                  <td class="strong">{{ row.name }}</td>
+                  <td class="num" style="color:var(--warn)">{{ row.current_stock }}</td>
+                  <td class="num muted">{{ row.reorder_level }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="empty">Nothing at or below its reorder level.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Recent sales</h2>
+        <a class="card-note" href="/sales">All sales</a>
+      </div>
+      {% if recent_sales %}
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Reference</th><th>Date</th><th class="num">Total</th></tr></thead>
+            <tbody>
+              {% for sale in recent_sales %}
+                <tr>
+                  <td class="strong"><a href="/sales/{{ sale.id }}">{{ sale.reference }}</a></td>
+                  <td class="muted">{{ sale.date | date }}</td>
+                  <td class="num">{{ fmt(sale.total) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="empty">No sales yet. Start with “New sale”.</p>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
