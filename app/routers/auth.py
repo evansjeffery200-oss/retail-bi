@@ -29,11 +29,13 @@ def _page(request, template, business, **extra):
 
 @router.get("/welcome", response_class=HTMLResponse)
 def welcome_page(request: Request, db: Session = Depends(get_db)):
-    if request.session.get("uid"):
-        return RedirectResponse("/", status_code=303)
+    """Public landing page. It stays reachable while signed in, so it can be
+    viewed or shared; the header simply offers the dashboard instead."""
     business = get_business(db)
     return templates.TemplateResponse(
-        request, "welcome.html", _page(request, "welcome.html", business)
+        request,
+        "welcome.html",
+        _page(request, "welcome.html", business, signed_in=bool(request.session.get("uid"))),
     )
 
 

@@ -21,8 +21,12 @@
         </div>
       </div>
       <div class="welcome-nav-actions">
-        <a class="btn btn-ghost" href="/login">Sign in</a>
-        {% if signup_open %}<a class="btn btn-primary" href="/signup">Create account</a>{% endif %}
+        {% if signed_in %}
+          <a class="btn btn-primary" href="/">Open dashboard &rarr;</a>
+        {% else %}
+          <a class="btn btn-ghost" href="/login">Sign in</a>
+          {% if signup_open %}<a class="btn btn-primary" href="/signup">Create account</a>{% endif %}
+        {% endif %}
       </div>
     </header>
 
@@ -34,7 +38,10 @@
       </p>
 
       <div class="hero-actions">
-        {% if signup_open %}
+        {% if signed_in %}
+          <a class="btn btn-primary" href="/">Open your dashboard &rarr;</a>
+          <a class="btn btn-ghost" href="/sales/new">Record a sale</a>
+        {% elif signup_open %}
           <a class="btn btn-primary" href="/signup">Enter the app &rarr;</a>
           <a class="btn btn-ghost" href="/login">I already have an account</a>
         {% else %}
