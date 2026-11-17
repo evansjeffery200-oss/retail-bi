@@ -45,12 +45,12 @@
   <form class="card card-body" action="/settings/signups" method="post">
     <h2 style="margin-bottom:6px">Accounts and sign-ups</h2>
     <p class="card-note" style="margin-bottom:14px">
-      Everyone with an account sees this store's sales, stock and expenses, so share the code with staff only.
+      Everyone with an account sees this store's sales, stock and expenses. The store code is optional at sign-up: it can pre-fill the form through the invite link, and anyone who types it still has to get it right.
     </p>
 
     <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600">
       <input type="checkbox" name="signup_open" {{ 'checked' if business.signup_open }} />
-      Allow people with the store code to create an account
+      Allow people to create an account
     </label>
 
     <div style="margin-top:14px;max-width:240px">
@@ -90,7 +90,7 @@
 
   <form action="/settings/signups/regenerate" method="post">
     <button class="btn btn-ghost" type="submit">Create a new store code</button>
-    <span class="card-note" style="margin-left:8px">Anyone with the old code loses access to the create-account page.</span>
+    <span class="card-note" style="margin-left:8px">Old codes stop working. Sign-ups stay open or closed according to the toggle above.</span>
   </form>
 </div>
 {% endblock %}

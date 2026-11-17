@@ -48,9 +48,9 @@
           </div>
 
           <div style="margin-bottom:14px">
-            <label class="label" for="code">Store code</label>
-            <input class="field" id="code" name="code" value="{{ code }}" autocomplete="off" placeholder="Ask the owner for the code" required />
-            <p class="card-note" style="margin-top:6px">Accounts share this store's sales and stock, so the code keeps it to your team.</p>
+            <label class="label" for="code">Store code <span style="text-transform:none;letter-spacing:normal;color:var(--muted);font-weight:400">(optional)</span></label>
+            <input class="field" id="code" name="code" value="{{ code }}" autocomplete="off" placeholder="Leave blank if you don't have one" />
+            <p class="card-note" style="margin-top:6px">Not required. Accounts share this store's sales and stock, so the code only adds a little privacy if the owner gave you one.</p>
           </div>
 
           {% if error %}<div class="alert" style="margin-bottom:12px">{{ error }}</div>{% endif %}

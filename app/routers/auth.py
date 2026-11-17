@@ -137,8 +137,6 @@ def signup_submit(
 
     if not business.signup_open:
         return fail("New accounts are closed for this store. Ask the owner to open sign-ups.", 403)
-    if not business.signup_code:
-        return fail("This store has no sign-up code yet. Ask the owner to set one in Settings.", 403)
     if email and not EMAIL_RE.match(email):
         return fail("That email address does not look right.")
     if db.scalars(select(User).where(User.email == email)).first() is not None:
@@ -147,8 +145,14 @@ def signup_submit(
         return fail(f"Use at least {MIN_PASSWORD} characters for the password.")
     if password != confirm:
         return fail("The two passwords do not match.")
-    if code != clean_signup_code(business.signup_code):
-        return fail("That store code is not right. Ask the owner to share the current code.")
+    # The store code is optional: leave it blank to sign up, or enter the one
+    # the owner shared. A non-blank code still has to match.
+    expected_code = clean_signup_code(business.signup_code)
+    if code and expected_code and code != expected_code:
+        return fail(
+            "That store code is not right. Leave the field blank to create an account, "
+            "or ask the owner for the current code."
+        )
 
     user = User(email=email, password_hash=hash_password(password), full_name=full_name or None)
     db.add(user)
