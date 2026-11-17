@@ -52,3 +52,45 @@
     }, 170);
   });
 })();
+
+/* Vee, the guide on the sign-in and create-account pages.
+   She cycles her lines and gives the form a soft gold breath so the eye
+   lands on the fields she is pointing at. */
+(function () {
+  "use strict";
+
+  var bubble = document.querySelector(".guide-bubble span[data-guide-lines]");
+  if (!bubble) return;
+
+  var reduce = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  if (reduce && reduce.matches) return;
+
+  var lines = [];
+  try {
+    lines = JSON.parse(bubble.getAttribute("data-guide-lines") || "[]");
+  } catch (err) {
+    lines = [];
+  }
+
+  var card = document.querySelector(".auth-card");
+  if (card) {
+    window.setTimeout(function () {
+      card.classList.add("is-pointed");
+      window.setTimeout(function () {
+        card.classList.remove("is-pointed");
+      }, 3100);
+    }, 750);
+  }
+
+  if (!Array.isArray(lines) || lines.length < 2) return;
+
+  var index = 0;
+  window.setInterval(function () {
+    bubble.classList.add("is-swapping");
+    window.setTimeout(function () {
+      index = (index + 1) % lines.length;
+      bubble.textContent = lines[index];
+      bubble.classList.remove("is-swapping");
+    }, 270);
+  }, 4200);
+})();
