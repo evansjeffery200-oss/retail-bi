@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create account · {{ business.name }}</title>
+  <link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card auth-card-wide">
+      <div class="auth-head">
+        <div class="auth-mark">R</div>
+        <h1>Create account</h1>
+        <p>{{ business.name }} · Retail BI</p>
+      </div>
+
+      {% if not signup_open %}
+        <div class="card card-body">
+          <div class="alert">New accounts are closed for this store. Ask the owner to open sign-ups in Settings.</div>
+          <p class="card-note" style="margin-top:12px"><a href="/login">Sign in</a> if you already have an account.</p>
+        </div>
+      {% else %}
+        <form class="card card-body" action="/signup" method="post">
+          <div style="margin-bottom:14px">
+            <label class="label" for="full_name">Your name</label>
+            <input class="field" id="full_name" name="full_name" value="{{ full_name }}" autocomplete="name" placeholder="Optional" />
+          </div>
+
+          <div style="margin-bottom:14px">
+            <label class="label" for="email">Email</label>
+            <input class="field" id="email" name="email" type="email" autocomplete="username" value="{{ email }}" required />
+          </div>
+
+          <div class="form-grid" style="margin-bottom:14px">
+            <div>
+              <label class="label" for="password">Password</label>
+              <input class="field" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+            </div>
+            <div>
+              <label class="label" for="confirm">Repeat password</label>
+              <input class="field" id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required />
+            </div>
+          </div>
+
+          <div style="margin-bottom:14px">
+            <label class="label" for="code">Store code</label>
+            <input class="field" id="code" name="code" value="{{ code }}" autocomplete="off" placeholder="Ask the owner for the code" required />
+            <p class="card-note" style="margin-top:6px">Accounts share this store's sales and stock, so the code keeps it to your team.</p>
+          </div>
+
+          {% if error %}<div class="alert" style="margin-bottom:12px">{{ error }}</div>{% endif %}
+
+          <button class="btn btn-primary btn-block" type="submit">Create account</button>
+        </form>
+
+        <p class="auth-foot">Already have an account? <a href="/login">Sign in</a> · <a href="/welcome">Back to welcome</a></p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

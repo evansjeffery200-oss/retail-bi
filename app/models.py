@@ -16,7 +16,12 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
+    full_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+    @property
+    def display_name(self) -> str:
+        return (self.full_name or "").strip() or self.email
 
 
 class Business(Base):
@@ -28,6 +33,8 @@ class Business(Base):
     currency_locale: Mapped[str] = mapped_column(String(16), default="en-NG")
     tax_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     tax_rate: Mapped[float] = mapped_column(Float, default=0.0)
+    signup_open: Mapped[bool] = mapped_column(Boolean, default=True)
+    signup_code: Mapped[str | None] = mapped_column(String(24), nullable=True)
 
 
 class Product(Base):

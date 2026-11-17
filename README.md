@@ -39,6 +39,8 @@ uvicorn app.main:app --reload
 ```
 
 Open http://127.0.0.1:8000. Tables and your login are created on first startup from the env vars.
+Visitors who are not signed in land on `/welcome`, and can create their own account at `/signup`
+if they know the store code (shown in Settings).
 
 Quick local run without Postgres:
 
@@ -91,7 +93,8 @@ app/stock.py          stock level calculations
 
 ## Not included yet
 
-- Multiple staff accounts or roles (single login by design).
+- Roles and per-user permissions: any account created through `/signup` sees the whole store.
+- Password reset by email (an owner can set a new `INITIAL_PASSWORD`, or you can add a reset flow).
 - PDF invoices or receipts.
 - Purchase orders and supplier payments.
 - CSV import/export. The tables are plain Postgres, so you can query them directly meanwhile.

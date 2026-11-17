@@ -1,13 +1,13 @@
 from datetime import date, datetime, time, timedelta
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..models import Expense, Sale, SaleItem, User
-from ..security import current_user
+from ..security import current_user, optional_user
 from ..stock import stock_rows
 from ..templating import ctx, get_business, templates
 
@@ -15,7 +15,9 @@ router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse)
-def dashboard(request: Request, db: Session = Depends(get_db), user: User = Depends(current_user)):
+def dashboard(request: Request, db: Session = Depends(get_db), user: User | None = Depends(optional_user)):
+    if user is None:
+        return RedirectResponse("/welcome", status_code=303)
     business = get_business(db)
     now = datetime.now()
     start_today = datetime.combine(date.today(), time.min)

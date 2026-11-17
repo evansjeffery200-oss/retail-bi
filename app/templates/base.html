@@ -27,7 +27,7 @@
       </nav>
 
       <div class="sidebar-foot">
-        <span class="email">{{ user.email if user else '' }}</span>
+        <span class="email">{{ user.display_name if user else '' }}</span>
         <form action="/logout" method="post"><button type="submit">Sign out</button></form>
       </div>
     </aside>

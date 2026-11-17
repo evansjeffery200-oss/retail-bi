@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sign in · Retail BI</title>
+  <title>Sign in · {{ business.name }}</title>
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div class="auth-card">
       <div class="auth-head">
         <div class="auth-mark">R</div>
-        <h1>Retail BI</h1>
+        <h1>{{ business.name }}</h1>
         <p>Sign in to your shop dashboard</p>
       </div>
 
@@ -31,8 +31,12 @@
       </form>
 
       <p class="auth-foot">
-        First time? Set <code>INITIAL_EMAIL</code> and <code>INITIAL_PASSWORD</code>,
-        restart the service, and that account is created automatically.
+        {% if signup_open %}
+          New here? <a href="/signup">Create an account</a><br />
+        {% else %}
+          New accounts are closed for now.<br />
+        {% endif %}
+        <a href="/welcome" class="link-quiet">Back to welcome</a>
       </p>
     </div>
   </div>

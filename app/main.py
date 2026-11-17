@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import select
+from sqlalchemy import select, text
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -12,13 +12,46 @@ from .config import settings
 from .db import Base, SessionLocal, engine
 from .models import Business, User
 from .routers import auth, dashboard, expenses, products, sales, settings as settings_router, stock
-from .security import hash_password
+from .security import hash_password, new_signup_code
+from .templating import get_business
 
 STATIC_DIR = Path(__file__).parent / "static"
 
 
 def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
+
+
+def add_late_columns() -> None:
+    """Columns added after the first deploy. Safe to re-run: existing columns are ignored."""
+    boolean_default = "TRUE" if engine.dialect.name == "postgresql" else "1"
+    statements = [
+        "ALTER TABLE users ADD COLUMN full_name VARCHAR(120)",
+        f"ALTER TABLE business ADD COLUMN signup_open BOOLEAN NOT NULL DEFAULT {boolean_default}",
+        "ALTER TABLE business ADD COLUMN signup_code VARCHAR(24)",
+    ]
+    for statement in statements:
+        try:
+            with engine.begin() as connection:
+                connection.execute(text(statement))
+        except Exception:
+            # Column already there (fresh database) or dialect refused; either way carry on.
+            pass
+
+
+def ensure_business_defaults() -> None:
+    """Give the store a sign-up code so the invite field on the create-account page works."""
+    with SessionLocal() as db:
+        business = get_business(db)
+        changed = False
+        if not business.signup_code:
+            business.signup_code = new_signup_code()
+            changed = True
+        if business.signup_open is None:
+            business.signup_open = True
+            changed = True
+        if changed:
+            db.commit()
 
 
 def seed_from_env() -> None:
@@ -50,7 +83,9 @@ def seed_from_env() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_tables()
+    add_late_columns()
     seed_from_env()
+    ensure_business_defaults()
     yield
 
 
