@@ -11,14 +11,33 @@
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body{% if user and user.reduced_motion %} class="reduce-motion"{% endif %}>
+  <div class="drawer-scrim" data-drawer-scrim hidden></div>
+
+  <header class="mobile-bar">
+    <button class="drawer-toggle" type="button" data-drawer-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Open the menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="mobile-brand">
+      <div class="brand-mark">V</div>
+      <div>
+        <div class="brand-name">Vantiq</div>
+        <div class="brand-sub">Retail BI Kit</div>
+      </div>
+    </div>
+    <div class="mobile-store">{{ store_label }}</div>
+  </header>
+
   <div class="shell">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar" data-drawer>
       <div class="brand">
         <div class="brand-mark">V</div>
         <div>
           <div class="brand-name">Vantiq</div>
           <div class="brand-sub">Retail BI Kit</div>
         </div>
+        <button class="drawer-close" type="button" data-drawer-close aria-label="Close the menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
       </div>
 
       <div class="biz-card">

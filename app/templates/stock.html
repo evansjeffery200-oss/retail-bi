@@ -10,7 +10,9 @@
   </header>
 
   {% if products %}
-    <form class="card card-body" action="/stock/receipts" method="post">
+    <details class="add-panel" open>
+      <summary>Receive stock</summary>
+      <form class="card card-body" action="/stock/receipts" method="post">
       <h2 style="margin-bottom:14px">Receive stock</h2>
       <div class="form-grid">
         <div class="span-2">
@@ -45,6 +47,7 @@
       </div>
       <div class="form-actions"><button class="btn btn-primary" type="submit">Add receipt</button></div>
     </form>
+    </details>
   {% else %}
     <p class="card card-body empty">Add a product first, then you can receive stock.</p>
   {% endif %}

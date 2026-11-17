@@ -184,3 +184,113 @@
   card.classList.add("is-in");
   render();
 })();
+
+/* Phone layout: the menu button opens the sidebar as a drawer. */
+(function () {
+  "use strict";
+
+  var drawer = document.querySelector("[data-drawer]");
+  var toggle = document.querySelector("[data-drawer-toggle]");
+  var scrim = document.querySelector("[data-drawer-scrim]");
+  var closeBtn = document.querySelector("[data-drawer-close]");
+  if (!drawer || !toggle) return;
+
+  function open() {
+    drawer.classList.add("is-open");
+    document.body.classList.add("drawer-open");
+    toggle.setAttribute("aria-expanded", "true");
+    if (scrim) {
+      scrim.hidden = false;
+      // let the browser paint the scrim before fading it in
+      window.requestAnimationFrame(function () {
+        scrim.classList.add("is-open");
+      });
+    }
+  }
+
+  function close() {
+    drawer.classList.remove("is-open");
+    document.body.classList.remove("drawer-open");
+    toggle.setAttribute("aria-expanded", "false");
+    if (scrim) {
+      scrim.classList.remove("is-open");
+      window.setTimeout(function () {
+        scrim.hidden = true;
+      }, 240);
+    }
+  }
+
+  toggle.addEventListener("click", function () {
+    if (drawer.classList.contains("is-open")) close();
+    else open();
+  });
+  if (closeBtn) closeBtn.addEventListener("click", close);
+  if (scrim) scrim.addEventListener("click", close);
+
+  // following a link should not leave the drawer hanging open
+  drawer.addEventListener("click", function (event) {
+    var link = event.target.closest ? event.target.closest("a") : null;
+    if (link && link.getAttribute("href")) close();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && drawer.classList.contains("is-open")) close();
+  });
+
+  var wide = window.matchMedia ? window.matchMedia("(min-width: 901px)") : null;
+  if (wide && wide.addEventListener) {
+    wide.addEventListener("change", function (event) {
+      if (event.matches) close();
+    });
+  }
+})();
+
+/* Phone layout: give each cell of a simple data table the name of its column, so
+   the stylesheet can stack the rows into labelled pairs. Tables with form fields
+   in them are left alone. */
+(function () {
+  "use strict";
+
+  function labelTables() {
+    var tables = document.querySelectorAll("table.data");
+    Array.prototype.forEach.call(tables, function (table) {
+      if (table.querySelector("input, select, textarea")) return;
+      var heads = table.querySelectorAll("thead th");
+      if (!heads.length) return;
+      var labels = Array.prototype.map.call(heads, function (th) {
+        return (th.textContent || "").trim();
+      });
+      var rows = table.querySelectorAll("tbody tr");
+      Array.prototype.forEach.call(rows, function (row) {
+        Array.prototype.forEach.call(row.children, function (cell, i) {
+          if (!cell.hasAttribute("data-label")) {
+            cell.setAttribute("data-label", labels[i] || "");
+          }
+        });
+      });
+      table.classList.add("stacked");
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", labelTables);
+  } else {
+    labelTables();
+  }
+})();
+
+/* Desktop: the add panels are plain forms, so never leave one collapsed. */
+(function () {
+  "use strict";
+
+  function keepOpen() {
+    if (!window.matchMedia || !window.matchMedia("(max-width: 720px)").matches) {
+      Array.prototype.forEach.call(document.querySelectorAll(".add-panel"), function (panel) {
+        panel.open = true;
+      });
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", keepOpen);
+  else keepOpen();
+})();

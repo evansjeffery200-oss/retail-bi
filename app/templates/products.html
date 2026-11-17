@@ -9,6 +9,8 @@
     </div>
   </header>
 
+  <details class="add-panel" open>
+    <summary>Add a product</summary>
   <form class="card card-body" action="/products" method="post">
     <h2 style="margin-bottom:14px">Add a product</h2>
     <div class="form-grid">
@@ -47,6 +49,7 @@
     </div>
     <div class="form-actions"><button class="btn btn-primary" type="submit">Add product</button></div>
   </form>
+  </details>
 
   <div class="card">
     {% if products %}

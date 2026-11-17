@@ -119,21 +119,112 @@ p { margin: 0; }
 
 .content { padding: 26px 30px 44px; min-width: 0; }
 
-@media (max-width: 860px) {
-  .shell { grid-template-columns: 1fr; }
-  .sidebar {
-    position: sticky; top: 0; z-index: 30; height: auto; flex-direction: row;
-    align-items: center; gap: 10px; padding: 10px 12px; overflow-x: auto;
-    border-right: 0; border-bottom: 1px solid var(--sidebar-line);
+/* Phones and small tablets: the sidebar becomes a drawer behind a menu button */
+.mobile-bar { display: none; }
+.drawer-scrim { display: none; }
+.drawer-close {
+  display: none;
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 1px solid var(--sidebar-line);
+  background: transparent;
+  color: var(--muted);
+  place-items: center;
+  cursor: pointer;
+}
+.drawer-close svg { width: 16px; height: 16px; stroke: currentColor; }
+.mobile-store {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 42vw;
+}
+
+@media (max-width: 900px) {
+  .mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    padding: 9px 13px;
+    background: rgba(7, 17, 16, 0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--sidebar-line);
   }
-  .brand-sub, .biz-card, .sidebar-foot .email { display: none; }
-  .nav { flex-direction: row; gap: 4px; }
-  .nav a { padding: 7px 10px; white-space: nowrap; }
-  .nav a::before { display: none; }
-  .nav a.active { box-shadow: inset 0 -2px 0 var(--accent); border-radius: 10px 10px 6px 6px; }
-  .sidebar-foot { margin: 0 0 0 auto; }
-  .sidebar-foot button { width: auto; white-space: nowrap; }
-  .content { padding: 18px 16px 36px; }
+  .drawer-toggle {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    border: 1px solid var(--sidebar-line);
+    background: rgba(247, 246, 241, 0.04);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .drawer-toggle svg { width: 18px; height: 18px; stroke: currentColor; }
+  .drawer-toggle:active { transform: scale(0.97); }
+  .mobile-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .mobile-brand .brand-mark { width: 28px; height: 28px; border-radius: 9px; font-size: 12px; }
+  .mobile-brand .brand-name { font-size: 11.5px; }
+  .mobile-brand .brand-sub { font-size: 8px; margin-top: 2px; }
+
+  .shell { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 276px;
+    max-width: 86vw;
+    height: 100dvh;
+    z-index: 60;
+    padding: 14px 12px calc(14px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-right: 1px solid var(--sidebar-line);
+    transform: translateX(-103%);
+    transition: transform 0.3s cubic-bezier(0.22, 0.9, 0.28, 1);
+    box-shadow: 30px 0 70px -40px rgba(0, 0, 0, 0.95);
+  }
+  .sidebar.is-open { transform: none; }
+  .drawer-close { display: grid; }
+
+  .drawer-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(4, 10, 9, 0.62);
+    opacity: 0;
+    transition: opacity 0.24s ease;
+  }
+  .drawer-scrim[hidden] { display: none; }
+  .drawer-scrim.is-open { opacity: 1; }
+
+  body.drawer-open { overflow: hidden; }
+
+  .nav { flex-direction: column; gap: 2px; }
+  .nav a { padding: 12px 12px; font-size: 14px; border-radius: 12px; }
+  .nav svg { width: 17px; height: 17px; }
+  .nav a.active { box-shadow: none; }
+  .sidebar-foot { margin-top: auto; padding: 0 2px; }
+  .sidebar-foot .email { display: block; font-size: 11.5px; }
+  .sidebar-foot button { width: 100%; padding: 11px 10px; font-size: 13px; }
+
+  .content { padding: 16px 14px calc(40px + env(safe-area-inset-bottom)); }
 }
 
 /* Page header */
@@ -735,4 +826,136 @@ body.reduce-motion *::after {
   transition-duration: 0.001ms !important;
   transition-delay: 0s !important;
   scroll-behavior: auto !important;
+}
+
+/* Phones: tables turn into stacked rows, labels come from the header via JS */
+@media (max-width: 720px) {
+  .table-wrap { overflow: visible; }
+  table.data.stacked { font-size: 13px; }
+  table.data.stacked thead { display: none; }
+  table.data.stacked tbody,
+  table.data.stacked tr,
+  table.data.stacked td { display: block; width: 100%; }
+  table.data.stacked tr { padding: 10px 0; border-bottom: 1px solid #1f302d; }
+  table.data.stacked tbody tr:last-child { border-bottom: 0; }
+  table.data.stacked td {
+    border: 0;
+    padding: 4px 14px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    text-align: left;
+  }
+  table.data.stacked td::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 650;
+  }
+  table.data.stacked td[data-label=""]::before { content: none; }
+  table.data.stacked td.num { text-align: right; }
+  table.data.stacked td:first-child { padding-top: 0; font-size: 14px; }
+  table.data.stacked td:last-child { padding-bottom: 0; }
+  table.data.stacked tr.empty-row td { justify-content: center; }
+}
+
+/* Phones: text, spacing and tap targets */
+@media (max-width: 560px) {
+  html, body { font-size: 14.5px; }
+  h1 { font-size: 20px; }
+  .page-head { margin-bottom: 16px; gap: 10px; }
+  .page-head .sub { font-size: 12.5px; }
+  .head-actions { width: 100%; }
+  .head-actions .btn { flex: 1 1 0; }
+  .kpis { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi { padding: 12px 13px; }
+  .kpi .value { font-size: 18px; }
+  .kpi .label { font-size: 9.5px; letter-spacing: 0.1em; }
+  .card-head, .card-body { padding-left: 14px; padding-right: 14px; }
+  .btn { padding: 11px 16px; min-height: 42px; }
+  .btn-sm { min-height: 36px; padding: 8px 12px; }
+  .field { font-size: 16px; padding: 11px 12px; }
+  .grid.two, .grid.even { gap: 12px; }
+  .stack > * + * { margin-top: 14px; }
+  .totals .line { font-size: 13px; }
+  .chart { gap: 6px; }
+  .chart-label { font-size: 9px; }
+  .tour h3 { font-size: 18px; }
+}
+
+/* Phones: the sale form's line items become small stacked cards instead of a
+   five column table that cannot fit. */
+@media (max-width: 720px) {
+  table#lines { width: 100%; }
+  table#lines thead { display: none; }
+  table#lines tbody,
+  table#lines tr,
+  table#lines td { display: block; width: 100%; }
+  table#lines tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #1f302d;
+  }
+  table#lines tr:last-child { border-bottom: 0; }
+  table#lines td { border: 0; padding: 0; }
+  table#lines td:nth-child(1) { grid-column: 1 / -1; }
+  table#lines td:nth-child(2)::before { content: "Qty"; display: block; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin-bottom: 4px; }
+  table#lines td:nth-child(3)::before { content: "Unit price"; display: block; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin-bottom: 4px; }
+  table#lines td:nth-child(4) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding-top: 2px;
+  }
+  table#lines td:nth-child(4)::before { content: "Line total"; color: var(--muted); }
+  table#lines td:nth-child(5) { grid-column: 1 / -1; }
+  table#lines td:nth-child(5) .row-actions { justify-content: flex-end; }
+  table#lines .field { font-size: 16px; }
+
+  /* the totals card should read as a receipt */
+  .totals { max-width: none !important; }
+}
+
+/* Fold-away add panels: a normal form on a desktop, a collapsible one on a phone */
+.add-panel summary { display: none; }
+@media (max-width: 720px) {
+  .add-panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); overflow: hidden; }
+  .add-panel > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--ink);
+    cursor: pointer;
+    list-style: none;
+  }
+  .add-panel > summary::-webkit-details-marker { display: none; }
+  .add-panel > summary::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 1.6px solid var(--muted);
+    border-bottom: 1.6px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+    margin-top: -3px;
+  }
+  .add-panel[open] > summary { border-bottom: 1px solid var(--line); }
+  .add-panel[open] > summary::after { transform: rotate(-135deg); margin-top: 2px; }
+  .add-panel > form.card {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .add-panel > form.card > h2 { display: none; }
 }

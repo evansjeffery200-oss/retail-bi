@@ -9,7 +9,9 @@
     </div>
   </header>
 
-  <form class="card card-body" action="/expenses" method="post">
+  <details class="add-panel" open>
+    <summary>Log an expense</summary>
+    <form class="card card-body" action="/expenses" method="post">
     <h2 style="margin-bottom:14px">Log an expense</h2>
     <div class="form-grid">
       <div class="span-2">
@@ -47,6 +49,7 @@
     </div>
     <div class="form-actions"><button class="btn btn-primary" type="submit">Save expense</button></div>
   </form>
+  </details>
 
   {% if by_category %}
     <div class="card card-body">
