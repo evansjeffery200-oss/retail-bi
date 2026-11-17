@@ -4,63 +4,108 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0a1413" />
-  <title>Welcome · {{ business.name }}</title>
+  <title>VANTIQ Retail BI Kit · {{ business.name }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/app.css" />
 </head>
-<body class="welcome-body">
-  <div class="welcome-shell">
-    <header class="welcome-nav">
-      <div class="welcome-brand">
-        <div class="brand-mark">V</div>
-        <div>
-          <div class="welcome-brand-name">Vantiq</div>
-          <div class="welcome-brand-sub">Retail BI Kit</div>
-        </div>
-      </div>
-      <div class="welcome-nav-actions">
-        {% if signed_in %}
-          <a class="btn btn-primary" href="/">Open dashboard &rarr;</a>
-        {% else %}
-          <a class="btn btn-ghost" href="/login">Sign in</a>
-          {% if signup_open %}<a class="btn btn-primary" href="/signup">Create account</a>{% endif %}
-        {% endif %}
-      </div>
-    </header>
+<body>
+  <div class="landing">
+    <div class="landing-decor" aria-hidden="true">
+      <div class="d-glow d-glow-a vq-glow"></div>
+      <div class="d-glow d-glow-b vq-glow" style="animation-delay:1.6s"></div>
+      <div class="d-glow d-glow-c vq-glow" style="animation-delay:3.2s"></div>
 
-    <section class="hero">
-      <p class="hero-eyebrow">&#8226; {{ business.name }}</p>
-      <h1 class="hero-title">Know what your <em>shop really makes</em>.</h1>
-      <p class="hero-sub">
-        Sales, stock, expenses and what you truly keep, in one calm, organised system built for shop owners.
-      </p>
+      <div class="d-grid"></div>
 
-      <div class="hero-actions">
-        {% if signed_in %}
-          <a class="btn btn-primary" href="/">Open your dashboard &rarr;</a>
-          <a class="btn btn-ghost" href="/sales/new">Record a sale</a>
-        {% elif signup_open %}
-          <a class="btn btn-primary" href="/signup">Enter the app &rarr;</a>
-          <a class="btn btn-ghost" href="/login">I already have an account</a>
-        {% else %}
-          <a class="btn btn-primary" href="/login">Sign in &rarr;</a>
-          <span class="hero-note">New accounts are closed. Ask the owner for access.</span>
-        {% endif %}
+      <div class="d-rings">
+        <div class="d-ring d-ring-a vq-spin-slow"><span class="dot"></span></div>
+        <div class="d-ring d-ring-b vq-spin-slower"><span class="dot"></span></div>
+        <div class="d-ring d-ring-c"></div>
       </div>
-    </section>
 
-    <div class="hero-tags">
-      <span>&#8599; Net profit, live</span>
-      <span>&#9634; Stock that warns you</span>
-      <span>&#9673; Every cost logged</span>
+      <div class="d-float d-sq-a" style="animation-delay:.4s"></div>
+      <div class="d-float d-circle" style="animation-delay:1.1s"></div>
+      <div class="d-float d-diamond" style="animation-delay:2.2s"></div>
+      <div class="d-float d-sq-b" style="animation-delay:1.7s"></div>
+
+      <div class="d-cross vq-fade" style="top:14%;left:42%;animation-delay:.2s"></div>
+      <div class="d-cross vq-fade" style="top:72%;left:36%;animation-delay:1.4s"></div>
+      <div class="d-cross vq-fade" style="top:34%;right:31%;animation-delay:2.6s"></div>
+
+      <div class="d-hair d-hair-top"></div>
+      <div class="d-hair d-hair-bottom"></div>
     </div>
 
-    <footer class="welcome-foot">
-      <span>Built for clarity</span>
-      <span>Sales &middot; Stock &middot; Expenses &middot; Profit</span>
+    <header class="landing-header vq-fade">
+      <span class="landing-brand">
+        <span class="mark">V</span>
+        <span class="name">{{ business.name }} &middot; Vantiq</span>
+      </span>
+      <span class="landing-nav-actions">
+        {% if signed_in %}
+          <a class="landing-signin" href="/">Open dashboard</a>
+        {% else %}
+          <a class="landing-signin" href="/login">Sign in</a>
+        {% endif %}
+      </span>
+    </header>
+
+    <main class="landing-main">
+      <div class="landing-inner">
+        <div class="eyebrow-row vq-rise">
+          <span class="eyebrow-dot"></span>
+          <span class="eyebrow-text">Vantiq</span>
+          <span class="eyebrow-line vq-line"></span>
+        </div>
+
+        <h1 class="landing-title vq-rise">
+          <span class="line-1">Retail</span>
+          <span class="line-2">BI Kit</span>
+        </h1>
+
+        <p class="landing-sub vq-rise">
+          <strong>Intelligent tools. Practical solutions.</strong>
+          Sales, stock, expenses and what you truly keep, in one calm, organised system built for shop owners.
+        </p>
+
+        <div class="landing-actions vq-rise">
+          {% if signed_in %}
+            <a class="btn btn-primary btn-lg vq-sheen" href="/">Open your dashboard &rarr;</a>
+            <a class="btn btn-ghost btn-lg" href="/sales/new">Record a sale</a>
+          {% else %}
+            <a class="btn btn-primary btn-lg vq-sheen" href="/login">Enter the app &rarr;</a>
+            {% if signup_open %}
+              <a class="btn btn-ghost btn-lg" href="/signup">Create account</a>
+            {% else %}
+              <a class="btn btn-ghost btn-lg" href="/login">I already have an account</a>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <ul class="landing-tags vq-rise">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/></svg>
+            Net profit, live
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6 21 7v10l-9 4.4L3 17V7l9-4.4z"/><path d="M3 7l9 4.4L21 7"/><path d="M12 11.4V21"/></svg>
+            Stock that warns you
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.6"/><path d="M3 10.5h18"/><circle cx="16.6" cy="14.8" r="1.1"/></svg>
+            Every cost logged
+          </li>
+        </ul>
+      </div>
+    </main>
+
+    <footer class="landing-foot vq-fade">
+      <span>{{ business.name }} &middot; Built for clarity</span>
+      <span class="wide-only">Sales &middot; Stock &middot; Expenses &middot; Profit</span>
     </footer>
   </div>
+  <script src="/static/app.js" defer></script>
 </body>
 </html>
