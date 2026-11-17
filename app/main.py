@@ -25,12 +25,13 @@ def create_tables() -> None:
 def add_late_columns() -> None:
     """Columns added after the first deploy. Safe to re-run: existing columns are ignored."""
     boolean_default = "TRUE" if engine.dialect.name == "postgresql" else "1"
+    boolean_false = "FALSE" if engine.dialect.name == "postgresql" else "0"
     statements = [
         "ALTER TABLE users ADD COLUMN full_name VARCHAR(120)",
         f"ALTER TABLE business ADD COLUMN signup_open BOOLEAN NOT NULL DEFAULT {boolean_default}",
         "ALTER TABLE business ADD COLUMN signup_code VARCHAR(24)",
         "ALTER TABLE users ADD COLUMN role VARCHAR(16) NOT NULL DEFAULT 'member'",
-        f"ALTER TABLE users ADD COLUMN tour_done BOOLEAN NOT NULL DEFAULT {boolean_default}",
+        f"ALTER TABLE users ADD COLUMN tour_done BOOLEAN NOT NULL DEFAULT {boolean_false}",
         "ALTER TABLE business ADD COLUMN support_email VARCHAR(255)",
         "ALTER TABLE business ADD COLUMN support_phone VARCHAR(40)",
     ]
