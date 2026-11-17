@@ -6,3 +6,13 @@ venv/
 *.db
 *.sqlite3
 .pytest_cache/
+.neon
+node_modules/
+.env.local
+
+# Neon CLI scaffolding (local tooling, not part of the app)
+.agents/
+neon.ts
+package.json
+package-lock.json
+skills-lock.json
