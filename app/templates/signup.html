@@ -4,15 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Create account · {{ business.name }}</title>
+  <meta name="theme-color" content="#0a1413" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body>
   <div class="auth-wrap">
     <div class="auth-card auth-card-wide">
       <div class="auth-head">
-        <div class="auth-mark">R</div>
+        <div class="auth-mark">V</div>
         <h1>Create account</h1>
-        <p>{{ business.name }} · Retail BI</p>
+        <p>{{ business.name }} · Retail BI Kit</p>
       </div>
 
       {% if not signup_open %}

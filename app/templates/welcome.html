@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a1413" />
   <title>Welcome · {{ business.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body class="welcome-body">
   <div class="welcome-shell">
     <header class="welcome-nav">
       <div class="welcome-brand">
-        <div class="auth-mark">R</div>
+        <div class="brand-mark">V</div>
         <div>
-          <div class="welcome-brand-name">{{ business.name }}</div>
-          <div class="welcome-brand-sub">Retail BI</div>
+          <div class="welcome-brand-name">Vantiq</div>
+          <div class="welcome-brand-sub">Retail BI Kit</div>
         </div>
       </div>
       <div class="welcome-nav-actions">
@@ -23,44 +27,32 @@
     </header>
 
     <section class="hero">
-      <p class="hero-eyebrow">{{ business.currency_code }} · Store reporting</p>
-      <h1 class="hero-title">Know your profit before you count the cash.</h1>
+      <p class="hero-eyebrow">&#8226; {{ business.name }} &middot; {{ business.currency_code }}</p>
+      <h1 class="hero-title">Know what your <em>shop really makes</em>.</h1>
       <p class="hero-sub">
-        Record sales, stock and running costs in one place, then see what the shop really made
-        after the cost of the goods you sold.
+        Sales, stock, expenses and what you truly keep, in one calm, organised system built for shop owners.
       </p>
 
       <div class="hero-actions">
         {% if signup_open %}
-          <a class="btn btn-primary" href="/signup">Create your account</a>
-          <a class="btn btn-ghost" href="/login">I already have one</a>
+          <a class="btn btn-primary" href="/signup">Enter the app &rarr;</a>
+          <a class="btn btn-ghost" href="/login">I already have an account</a>
         {% else %}
-          <a class="btn btn-primary" href="/login">Sign in</a>
+          <a class="btn btn-primary" href="/login">Sign in &rarr;</a>
           <span class="hero-note">New accounts are closed. Ask the owner for access.</span>
         {% endif %}
       </div>
     </section>
 
-    <section class="feature-grid">
-      <article class="feature">
-        <div class="feature-mark">₦</div>
-        <h2>Live profit</h2>
-        <p>Every sale carries its own cost of goods, so gross profit and net after expenses update as you trade.</p>
-      </article>
-      <article class="feature">
-        <div class="feature-mark">▦</div>
-        <h2>Stock that adds up</h2>
-        <p>Opening stock, receipts and sales reconcile into a live count, with low-stock flags at your reorder level.</p>
-      </article>
-      <article class="feature">
-        <div class="feature-mark">≋</div>
-        <h2>Expenses in one place</h2>
-        <p>Log rent, transport and staff costs against the month so the profit figure is the honest one.</p>
-      </article>
-    </section>
+    <div class="hero-tags">
+      <span>&#8599; Net profit, live</span>
+      <span>&#9634; Stock that warns you</span>
+      <span>&#9673; Every cost logged</span>
+    </div>
 
     <footer class="welcome-foot">
-      {{ business.name }} · Retail BI{% if signup_open %} · <a href="/signup">Create account</a>{% endif %}
+      <span>Built for clarity</span>
+      <span>Sales &middot; Stock &middot; Expenses &middot; Profit</span>
     </footer>
   </div>
 </body>
