@@ -1,53 +1,142 @@
 {% extends "base.html" %}
 {% block title %}Settings{% endblock %}
 {% block content %}
-<div class="stack" style="max-width:680px">
+<div class="stack" style="max-width:720px">
   <header class="page-head">
     <div>
       <h1>Settings</h1>
-      <p class="sub">Store identity, currency and tax</p>
+      <p class="sub">Your profile, your sign-in, and how the app behaves</p>
     </div>
   </header>
 
   {% if notice %}<div class="panel-soft" style="color:var(--accent);font-size:13px;font-weight:600">{{ notice }}</div>{% endif %}
+  {% if error %}<div class="alert">{{ error }}</div>{% endif %}
 
-  <form class="card card-body" action="/settings" method="post">
-    <div style="margin-bottom:14px">
-      <label class="label" for="name">Store name</label>
-      <input class="field" id="name" name="name" value="{{ business.name }}" />
+  <section class="card card-body" id="profile">
+    <div class="card-head-inline">
+      <h2>Your profile</h2>
+      <span class="badge {{ 'badge-admin' if user.is_admin else 'badge-member' }}">{{ user.role_label }}</span>
     </div>
-
-    <div class="form-grid">
-      <div>
-        <label class="label" for="currency_code">Currency code</label>
-        <input class="field" id="currency_code" name="currency_code" value="{{ business.currency_code }}" placeholder="NGN" />
-      </div>
-      <div>
-        <label class="label" for="currency_locale">Currency locale</label>
-        <input class="field" id="currency_locale" name="currency_locale" value="{{ business.currency_locale }}" placeholder="en-NG" />
-      </div>
-    </div>
-
-    <div class="panel-soft" style="margin-top:14px">
-      <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600">
-        <input type="checkbox" name="tax_enabled" {{ 'checked' if business.tax_enabled }} />
-        Charge tax on sales
-      </label>
-      <div style="max-width:160px;margin-top:12px">
-        <label class="label" for="tax_rate">Tax rate (%)</label>
-        <input class="field" id="tax_rate" name="tax_rate" value="{{ business.tax_rate }}" inputmode="decimal" />
-      </div>
-    </div>
-
-    <div class="form-actions"><button class="btn btn-primary" type="submit">Save settings</button></div>
-  </form>
-
-  <div class="card card-body">
-    <h2 style="margin-bottom:6px">Accounts and sign-ups</h2>
-    <p class="card-note">
-      People, roles and the store code moved to the <a href="/admin">admin page</a>, where
-      you can promote someone to administrator or remove an account.
+    <p class="card-note" style="margin-bottom:14px">
+      Your name shows in the sidebar and next to your sales. The email is what you sign in with.
     </p>
-  </div>
+
+    <form action="/settings/profile" method="post">
+      <div class="form-grid">
+        <div>
+          <label class="label" for="full_name">Full name</label>
+          <input class="field" id="full_name" name="full_name" value="{{ user.full_name or '' }}" placeholder="Your name" autocomplete="name" />
+        </div>
+        <div>
+          <label class="label" for="email">Email</label>
+          <input class="field" id="email" name="email" type="email" value="{{ user.email }}" autocomplete="email" required />
+        </div>
+      </div>
+      <div class="profile-meta">
+        <span>Account created {{ user.created_at|date }}</span>
+        {% if user.is_admin %}<span>Administrator: store settings and accounts</span>{% endif %}
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Save profile</button></div>
+    </form>
+  </section>
+
+  <section class="card card-body" id="security">
+    <h2>Password</h2>
+    <p class="card-note" style="margin-bottom:14px">
+      Change it whenever you like. Eight characters or more, and something you do not use elsewhere.
+    </p>
+
+    <form action="/settings/password" method="post">
+      <div>
+        <label class="label" for="current_password">Current password</label>
+        <input class="field" id="current_password" name="current_password" type="password" autocomplete="current-password" required />
+      </div>
+      <div class="form-grid" style="margin-top:12px">
+        <div>
+          <label class="label" for="new_password">New password</label>
+          <input class="field" id="new_password" name="new_password" type="password" autocomplete="new-password" minlength="8" required />
+        </div>
+        <div>
+          <label class="label" for="confirm_password">Repeat it</label>
+          <input class="field" id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required />
+        </div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Change password</button></div>
+    </form>
+  </section>
+
+  <section class="card card-body" id="appearance">
+    <h2>How the app behaves</h2>
+    <form action="/settings/appearance" method="post">
+      <label class="check-row">
+        <input type="checkbox" name="reduced_motion" {{ 'checked' if user.reduced_motion }} />
+        <span>
+          <strong>Calm mode</strong>
+          <em>Stops the page and card animations. Handy on a slow phone, or if movement distracts.</em>
+        </span>
+      </label>
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Save appearance</button></div>
+    </form>
+
+    <div class="settings-divider"></div>
+
+    <form action="/help/tour" method="post">
+      <div class="card-head-inline">
+        <div>
+          <strong style="font-size:13.5px">The guided walkthrough</strong>
+          <p class="card-note">Six steps through the dashboard, inventory, sales, stock and expenses.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" type="submit">Play it again</button>
+      </div>
+    </form>
+  </section>
+
+  {% if user.is_admin %}
+  <section class="card card-body" id="store">
+    <div class="card-head-inline">
+      <h2>Store</h2>
+      <span class="card-note">Administrators only</span>
+    </div>
+    <p class="card-note" style="margin-bottom:14px">
+      The name and currency appear throughout the app. Tax applies to new sales when it is switched on.
+    </p>
+
+    <form action="/settings/store" method="post">
+      <div style="margin-bottom:14px">
+        <label class="label" for="name">Store name</label>
+        <input class="field" id="name" name="name" value="{{ business.name }}" placeholder="Your store" />
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label class="label" for="currency_code">Currency code</label>
+          <input class="field" id="currency_code" name="currency_code" value="{{ business.currency_code }}" placeholder="NGN" />
+        </div>
+        <div>
+          <label class="label" for="currency_locale">Currency locale</label>
+          <input class="field" id="currency_locale" name="currency_locale" value="{{ business.currency_locale }}" placeholder="en-NG" />
+        </div>
+      </div>
+
+      <div class="panel-soft" style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600">
+          <input type="checkbox" name="tax_enabled" {{ 'checked' if business.tax_enabled }} />
+          Charge tax on sales
+        </label>
+        <div style="max-width:160px;margin-top:12px">
+          <label class="label" for="tax_rate">Tax rate (%)</label>
+          <input class="field" id="tax_rate" name="tax_rate" value="{{ business.tax_rate }}" inputmode="decimal" />
+        </div>
+      </div>
+
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Save store settings</button></div>
+    </form>
+
+    <div class="settings-divider"></div>
+    <p class="card-note">
+      People, roles and sign-ups live on the <a href="/admin">admin page</a>, along with the support contact.
+    </p>
+  </section>
+  {% endif %}
 </div>
 {% endblock %}

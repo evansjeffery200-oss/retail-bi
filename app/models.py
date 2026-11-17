@@ -19,6 +19,7 @@ class User(Base):
     full_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     role: Mapped[str] = mapped_column(String(16), default="member", server_default="member")
     tour_done: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    reduced_motion: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     @property

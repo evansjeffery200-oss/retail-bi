@@ -32,6 +32,7 @@ def add_late_columns() -> None:
         "ALTER TABLE business ADD COLUMN signup_code VARCHAR(24)",
         "ALTER TABLE users ADD COLUMN role VARCHAR(16) NOT NULL DEFAULT 'member'",
         f"ALTER TABLE users ADD COLUMN tour_done BOOLEAN NOT NULL DEFAULT {boolean_false}",
+        f"ALTER TABLE users ADD COLUMN reduced_motion BOOLEAN NOT NULL DEFAULT {boolean_false}",
         "ALTER TABLE business ADD COLUMN support_email VARCHAR(255)",
         "ALTER TABLE business ADD COLUMN support_phone VARCHAR(40)",
     ]

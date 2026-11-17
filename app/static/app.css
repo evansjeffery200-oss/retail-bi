@@ -695,3 +695,44 @@ body.is-leaving .landing-foot {
 @media (max-width: 720px) {
   .tour { right: 12px; left: 12px; bottom: 12px; width: auto; }
 }
+
+/* settings: profile, password, appearance and store cards */
+.card-head-inline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.card-head-inline h2 { margin-bottom: 0; }
+.card-head-inline .card-note { margin: 2px 0 0; }
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(247, 246, 241, 0.03);
+  cursor: pointer;
+}
+.check-row input { margin-top: 3px; }
+.check-row strong { display: block; font-size: 13.5px; font-weight: 650; margin-bottom: 3px; }
+.check-row em { display: block; font-size: 12px; font-style: normal; color: var(--muted); line-height: 1.55; }
+.settings-divider { height: 1px; background: var(--line); margin: 18px 0; border: 0; }
+.card-body .card-head-inline + .card-note,
+.card-body form + form { margin-top: 0; }
+
+/* calm mode: the same layout, none of the movement */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}

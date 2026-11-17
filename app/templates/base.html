@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/app.css" />
 </head>
-<body>
+<body{% if user and user.reduced_motion %} class="reduce-motion"{% endif %}>
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">
@@ -51,11 +51,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.2a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.2-2.6 4"/><circle cx="12" cy="17.3" r="0.9" fill="currentColor" stroke="none"/></svg>
           Help
         </a>
-        {% if user and user.is_admin %}
         <a href="/settings" class="{{ 'active' if active == 'settings' }}">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.6v2M12 19.4v2M4.3 12H2.3M21.7 12h-2M6.4 6.4 4.9 4.9M19.1 19.1l-1.5-1.5M17.6 6.4l1.5-1.5M4.9 19.1l1.5-1.5"/></svg>
           Settings
         </a>
+        {% if user and user.is_admin %}
         <a href="/admin" class="{{ 'active' if active == 'admin' }}">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 20 6v6.2c0 4.4-3.2 7.5-8 9-4.8-1.5-8-4.6-8-9V6l8-3.2z"/><path d="M9.2 12.2l2 2 3.6-3.8"/></svg>
           Admin
