@@ -349,12 +349,18 @@ table.data tbody tr { transition: background-color .2s ease; }
 .nav a:hover svg { transform: translateX(1px); }
 .nav a::before { transition: opacity .2s ease, height .2s ease; }
 
-/* Leaving state, used by the navigation transition script */
+/* Leaving state, used by the navigation transition script.
+   animation:none is required, otherwise the finished entrance animation keeps
+   overriding the fade with its forwards fill. */
 body.is-leaving .content,
 body.is-leaving .auth-card,
 body.is-leaving .landing-main,
 body.is-leaving .landing-header,
-body.is-leaving .landing-foot { opacity: 0; transform: translateY(-6px); }
+body.is-leaving .landing-foot {
+  animation: none !important;
+  opacity: 0;
+  transform: translateY(-6px);
+}
 .content, .auth-card, .landing-main, .landing-header, .landing-foot {
   transition: opacity .18s ease, transform .18s ease;
 }
