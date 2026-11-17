@@ -12,9 +12,6 @@
 </head>
 <body>
   <div class="auth-wrap">
-    <div class="auth-shell">
-      {% set guide_lines = ["Welcome back. Sign in right here.", "Email, password, and you're in.", "I keep an eye on the numbers."] %}
-      {% include "_guide.html" %}
     <div class="auth-card">
       <div class="auth-head">
         <div class="auth-mark">V</div>
@@ -45,7 +42,6 @@
         {% endif %}
         <a href="/welcome" class="link-quiet">Back to welcome</a>
       </p>
-    </div>
     </div>
   </div>
   <script src="/static/app.js" defer></script>
